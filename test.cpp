@@ -1,4 +1,5 @@
 #include "pair.hpp"
+#include "Vector.hpp"
 #include <iostream>
 
 int main() {
@@ -12,4 +13,6 @@ int main() {
 	std::cout << (paire1 <= paire2) << std::endl; 
 	std::cout << (paire1 > paire2) << std::endl; 
 	std::cout << (paire1 == paire2) << std::endl; 
+
+	ft::Vector<int> vec(5, 3);
 }
