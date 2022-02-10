@@ -31,7 +31,7 @@ namespace ft {
 						_allocator.construct(_begin + n, val);
 					}
 			}
-			/*template <class InputIterator>
+			template <class InputIterator>
 			Vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) {
 				size_type size = last - _begin;
 
@@ -40,7 +40,7 @@ namespace ft {
 				_begin = alloc.allocate(size);
 				while (size--)
 					alloc.construct(_begin + size, *(last--));
-			}*/
+			}
 
 			Vector & operator=(const Vector & rhs) {
 				_capacity = rhs._capacity;
