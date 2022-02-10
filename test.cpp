@@ -15,4 +15,7 @@ int main() {
 	std::cout << (paire1 == paire2) << std::endl; 
 
 	ft::Vector<int> vec(5, 3);
+	std::cout << paire1.first << std::endl;
+	ft::Vector<int> vec2(vec);
+	vec2.resize(2, 2);
 }
