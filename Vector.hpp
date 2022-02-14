@@ -23,23 +23,27 @@ namespace ft {
 
 		public:
 			explicit Vector(const allocator_type& alloc = allocator_type()) : _allocator(alloc), _begin(0), _capacity(0), _size(0) { }
-			explicit Vector(size_type n, const value_type& val = T(), const allocator_type& alloc = allocator_type()) :
+			explicit Vector(size_t n, const value_type& val = T(), const allocator_type& alloc = allocator_type()) :
 				_allocator(alloc), _begin(0), _capacity(n), _size(n) {
 					_begin = _allocator.allocate(n);
 					while (n--) {
-						std::cout << n << val << std::endl;
+						//std::cout << n << val << std::endl;
 						_allocator.construct(_begin + n, val);
 					}
 			}
 			template <class InputIterator>
 			Vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) {
-				size_type size = last - _begin;
+				size_type size = last - first;
 
+				//if ( typeid(ft::iterator_traits<InputIterator>::iterator_category) != typeid(std::random_access_iterator_tag) ) {
+				//	Vector()
+				//}
 				_capacity = size;
 				_size = size;
-				_begin = alloc.allocate(size);
+				_allocator = alloc;
+				_begin = _allocator.allocate(size);
 				while (size--)
-					alloc.construct(_begin + size, *(last--));
+					_allocator.construct(_begin + size, *(_begin + size));
 			}
 
 			Vector & operator=(const Vector & rhs) {
@@ -50,7 +54,7 @@ namespace ft {
 				size_type size = _capacity;
 				_begin = _allocator.allocate(size);
 				while (size--) {
-					std::cout << size << *(rhs._begin + size) << std::endl;
+					//std::cout << size << *(rhs._begin + size) << std::endl;
 					_allocator.construct(_begin + size, rhs._begin[size]);
 				}
 				return (*this);
@@ -78,12 +82,12 @@ namespace ft {
 
 			void resize (size_type n, value_type val = value_type()) {
 				while ( n < _size )
-					_allocator.destroy(_begin + _size--);
+					_allocator.destroy(_begin + --_size);
 				if ( n > _capacity ) {
 					reserve(n);
 				}
-				while ( n > _size++ )
-					_allocator.construct(_begin + _size, val);
+				while ( n > _size )
+					_allocator.construct(_begin + ++_size, val);
 			}
 
 			bool empty() const { return (!_size); }
@@ -121,6 +125,14 @@ namespace ft {
 
 			reference back() { return at(_size); }
 			const_reference back() const { return at(_size); }
+
+			/*template <class T> struct iterator_traits<T*> {
+				typedef ptrdiff_t                       difference_type;
+				typedef T                               value_type;
+				typedef T*                              pointer;
+				typedef T&                              reference;
+				typedef std::random_access_iterator_tag iterator_category;
+			};*/
 	};
 }
 
