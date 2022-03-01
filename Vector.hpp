@@ -1,8 +1,19 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 # include <iostream>
+# include "utils.hpp"
 
 namespace ft {
+
+	 template<class Iter>
+	 struct iterator_traits {
+		 typedef typename Iter::difference_type difference_type;
+		 typedef typename Iter::value_type value_type;
+		 typedef typename Iter::reference reference;
+		 typedef typename Iter::pointer pointer;
+		 typedef typename Iter::iterator_category iterator_category;
+	 };
+
 	template< class T, class Alloc = std::allocator<T> > class Vector {
 
 		typedef T value_type;
@@ -32,7 +43,7 @@ namespace ft {
 					}
 			}
 			template <class InputIterator>
-			Vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) {
+			Vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type* = NULL) {
 				size_type size = last - first;
 
 				//if ( typeid(ft::iterator_traits<InputIterator>::iterator_category) != typeid(std::random_access_iterator_tag) ) {
@@ -79,6 +90,7 @@ namespace ft {
 
 			size_type size() const { return (_size); }
 			size_type max_size() const { return ( _allocator.max_size() ); }
+			size_type capacity() const { return ( _capacity );
 
 			void resize (size_type n, value_type val = value_type()) {
 				while ( n < _size )
@@ -126,13 +138,14 @@ namespace ft {
 			reference back() { return at(_size); }
 			const_reference back() const { return at(_size); }
 
-			/*template <class T> struct iterator_traits<T*> {
-				typedef ptrdiff_t                       difference_type;
-				typedef T                               value_type;
-				typedef T*                              pointer;
-				typedef T&                              reference;
-				typedef std::random_access_iterator_tag iterator_category;
-			};*/
+			void clear() {
+				while (_size--) {
+					_allocator.destroy(_begin + _size);
+				}
+				_allocator.deallocate(_begin, _capacity);
+				_capacity = 0;
+			}
+
 	};
 }
 
