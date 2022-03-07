@@ -16,6 +16,9 @@ namespace ft {
 		typedef size_t size_type;
 		typedef T* iterator;
 		typedef const T* const_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef ft::reverse_iterator<const iterator> const_reverse_iterator;
+		typedef ptrdiff_t difference_type;
 
 		private:
 			pointer _begin;
@@ -78,6 +81,12 @@ namespace ft {
 
 			iterator end() { return (_begin + _size); }
 			const iterator end() const { return (_begin + _size); }
+
+			reverse_iterator rbegin() { return ( reverse_iterator(end())); }
+			//const_reverse_iterator rbegin() const  ( reverse_iterator(end())); }
+
+			reverse_iterator rend() { return ( reverse_iterator(begin())); }
+			//const_reverse_iterator rend() const  ( reverse_iterator(begin())); }
 
 			size_type size() const { return (_size); }
 			size_type max_size() const { return ( _allocator.max_size() ); }
