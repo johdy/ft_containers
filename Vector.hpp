@@ -4,18 +4,9 @@
 # include "utils.hpp"
 
 namespace ft {
-
-	 template<class Iter>
-	 struct iterator_traits {
-		 typedef typename Iter::difference_type difference_type;
-		 typedef typename Iter::value_type value_type;
-		 typedef typename Iter::reference reference;
-		 typedef typename Iter::pointer pointer;
-		 typedef typename Iter::iterator_category iterator_category;
-	 };
-
 	template< class T, class Alloc = std::allocator<T> > class Vector {
 
+		public:
 		typedef T value_type;
 		typedef Alloc allocator_type;
 		typedef typename allocator_type::reference reference;
@@ -90,7 +81,7 @@ namespace ft {
 
 			size_type size() const { return (_size); }
 			size_type max_size() const { return ( _allocator.max_size() ); }
-			size_type capacity() const { return ( _capacity );
+			size_type capacity() const { return ( _capacity ); }
 
 			void resize (size_type n, value_type val = value_type()) {
 				while ( n < _size )
