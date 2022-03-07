@@ -25,7 +25,9 @@ namespace ft {
 	struct enable_if : public enable_if_c<c, T> {};
 
 	template <class T>
-	struct is_integral_c {};
+	struct is_integral_c {
+		static const bool value = false;
+	};
 
 	template <>
 	struct is_integral_c<bool> {
