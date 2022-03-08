@@ -48,7 +48,7 @@ namespace ft {
 				_allocator = alloc;
 				_begin = _allocator.allocate(size);
 				while (size--)
-					_allocator.construct(_begin + size, *(_begin + size));
+					_allocator.construct(_begin + size, *(first + size));
 			}
 
 			Vector & operator=(const Vector & rhs) {
@@ -83,10 +83,10 @@ namespace ft {
 			const iterator end() const { return (_begin + _size); }
 
 			reverse_iterator rbegin() { return ( reverse_iterator(end())); }
-			//const_reverse_iterator rbegin() const  ( reverse_iterator(end())); }
+			const_reverse_iterator rbegin() const { return (reverse_iterator(end())); }
 
 			reverse_iterator rend() { return ( reverse_iterator(begin())); }
-			//const_reverse_iterator rend() const  ( reverse_iterator(begin())); }
+			const_reverse_iterator rend() const { return (reverse_iterator(begin())); }
 
 			size_type size() const { return (_size); }
 			size_type max_size() const { return ( _allocator.max_size() ); }
