@@ -77,7 +77,14 @@ namespace ft {
 	template <class T> 
 	struct is_integral : public is_integral_c<T> {};
 
-
+	template< class T >
+	class random_access_iterator {
+		//typedef typename ft::iterator_traits<Iter>::iterator_category iterator_category;
+		typedef T* value_type;
+		typedef typename T::difference_type difference_type;
+		typedef T** pointer;
+		typedef T reference;
+	};
 
 
 
