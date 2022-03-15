@@ -1,7 +1,7 @@
 #include "pair.hpp"
 #include "Vector.hpp"
 #include <iostream>
-
+#include <vector>
 template <class T>
 void display_vector(ft::Vector<T> vec) {
 	typename ft::Vector<T>::iterator it;
@@ -85,8 +85,12 @@ void test_ft_vector(void) {
 	display_vector(vec2);
 	std::cout << "-------------> Constructeur par range" << std::endl;
 	ft::Vector<int>::iterator itb = vec.begin() + 1;
+	std::vector<int> vecstd(4,3);
+	vecstd[0] = 1;
+	vecstd[1] = 2;
+	vecstd[3] = 4;
 	ft::Vector<int>::iterator ite = vec.end();
-	std::cout << *itb << std::endl;
+	std::cout << *(itb) << std::endl;
 	std::cout << *ite << std::endl;
 	ft::Vector<int> vec3(itb, ite);
 	display_vector(vec3);
