@@ -15,9 +15,9 @@ namespace ft {
 		typedef typename allocator_type::const_pointer const_pointer;
 		typedef size_t size_type;
 		typedef ft::random_access_iterator<value_type> iterator;
-		typedef const ft::random_access_iterator<value_type> const_iterator;
+		typedef ft::random_access_iterator<const value_type> const_iterator;
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
-		typedef const ft::reverse_iterator<iterator> const_reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 		typedef ptrdiff_t difference_type;
 
 		private:
@@ -104,7 +104,10 @@ namespace ft {
 
 			bool empty() const { return (!_size); }
 
+
 			void reserve (size_type n) {
+					if (n <= _capacity)
+						return ;
 					pointer new_begin;
 					size_type cpt = 0;
 
@@ -146,6 +149,27 @@ namespace ft {
 				_capacity = 0;
 			}
 
+			template <class InputIterator>
+			void assign (InputIterator first, InputIterator last) {
+				while (_size--)
+					_allocator.destroy(_begin + _size);
+				this->reserve(first - last);
+				_size = last - first;
+				size_t cpt = 0;
+				while (cpt < _size) {
+					_allocator.construct(_begin + cpt, first.base() + cpt);
+					cpt++;
+				}
+			}
+
+			/*iterator insert (iterator position, const value_type& val) {
+
+			}
+
+			template <class InputIterator>
+    		void insert (iterator position, InputIterator first, InputIterator last) {
+    			if (_size + (last - first) > _capacity)
+    		}*/
 	};
 }
 
