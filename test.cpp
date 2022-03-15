@@ -26,6 +26,50 @@ void test_ft_pair(void) {
 	std::cout << (paire1 == paire2) << std::endl; 
 }
 
+template <class Iter>
+void test_iterator(Iter it) {
+	std::cout << "------> déréférencement" << std::endl;	
+	std::cout << *it << std::endl;
+	std::cout << "------> pré et post incrémentation" << std::endl;	
+	++it;
+	std::cout << *it << std::endl;
+	it++;
+	std::cout << *it << std::endl;
+	std::cout << "------> pré et post décrémentation" << std::endl;	
+	--it;
+	std::cout << *it << std::endl;
+	it--;
+	std::cout << *it << std::endl;
+
+	std::cout << "------> construction d'un itérateur-copie par instanciation" << std::endl;	
+	Iter it_2 = it;
+	std::cout << *it_2 << std::endl;
+	std::cout << "------> incrémentation de la copie et comparaison des bases des 2 itérateurs" << std::endl;	
+	it_2++;
+	std::cout << it.base() << std::endl;
+	std::cout << it_2.base() << std::endl;
+	std::cout << "------> it +=2 et it -=2" << std::endl;	
+	it_2 += 2;
+	std::cout << *it_2 << std::endl;
+	it_2 -= 2;
+	std::cout << *it_2 << std::endl;
+	std::cout << "------> tests booleens == ; != ; <= ; < ; >= ; > " << std::endl;	
+	std::cout << (it == it_2) << std::endl;
+	std::cout << (it != it_2) << std::endl;
+	std::cout << (it <= it_2) << std::endl;
+	std::cout << (it < it_2) << std::endl;
+	std::cout << (it >= it_2) << std::endl;
+	std::cout << (it > it_2) << std::endl;
+	std::cout << "------> valeur des deux itérateurs" << std::endl;	
+	std::cout << *(it) << std::endl;
+	std::cout << *(it_2) << std::endl;
+	std::cout << "------> soustraction des itérateurs pour obtenir leur distance" << std::endl;
+	std::cout << (it_2 - it) << std::endl;
+	std::cout << "------> addition d'un itérateur à 2" << std::endl;	
+	std::cout << *(2 + it) << std::endl;
+
+}
+
 void test_ft_vector(void) {
 	std::cout << "---------------------- Test constructeurs ----------------------" << std::endl;
 	std::cout << "-------------> Constructeur par initialisation" << std::endl;
@@ -41,16 +85,17 @@ void test_ft_vector(void) {
 	display_vector(vec2);
 	std::cout << "-------------> Constructeur par range" << std::endl;
 	ft::Vector<int>::iterator itb = vec.begin() + 1;
-	ft::Vector<int>::iterator ite = vec.end() - 1;
+	ft::Vector<int>::iterator ite = vec.end();
 	std::cout << *itb << std::endl;
 	std::cout << *ite << std::endl;
 	ft::Vector<int> vec3(itb, ite);
 	display_vector(vec3);
 	std::cout << "---------------------- Test iterateurs ----------------------" << std::endl;	
-	std::cout << itb << std::endl;
-	std::cout << ite - 2 << std::endl;
-	//ft::Vector<int>::reverse_iterator rev_itb = vec.rbegin();
-	//std::cout << *rev_itb << std::endl;
+	std::cout << "-------------> ft::vector<int>iterator" << std::endl;	
+	test_iterator<ft::Vector<int>::iterator>(--itb);
+	std::cout << "-------------> ft::vector<int>reverse_iterator" << std::endl;	
+	ft::Vector<int>::reverse_iterator rev_itb = vec.rbegin();
+	test_iterator<ft::Vector<int>::reverse_iterator>(rev_itb);
 	std::cout << "---------------------- Test fonctions membres ----------------------" << std::endl;	
 
 	vec2.resize(2, 2);

@@ -73,8 +73,6 @@ namespace ft {
 			return (*this);
 		}
 
-		pointer operator->() const { return &(*this); }
-
 		reference operator[] (difference_type n) const { return ( *this + n ); }
 	};
 
@@ -135,6 +133,7 @@ namespace ft {
 
 	template< class Iter >
 	class reverse_iterator {
+	public:
 		typedef Iter iterator_type;
 		typedef typename ft::iterator_traits<Iter>::iterator_category iterator_category;
 		typedef	typename ft::iterator_traits<Iter>::value_type value_type;
@@ -210,7 +209,12 @@ namespace ft {
 	template <class Iterator>
 	reverse_iterator<Iterator> operator+ (typename reverse_iterator<Iterator>::difference_type n, const reverse_iterator<Iterator>& rev_it) { return (rev_it + n); }
 	template <class Iterator>
-	reverse_iterator<Iterator> operator- (typename reverse_iterator<Iterator>::difference_type n, const reverse_iterator<Iterator>& rev_it) { return (rev_it - n); }
+	typename reverse_iterator<Iterator>::difference_type operator- (const reverse_iterator<Iterator>& rev_it, const reverse_iterator<Iterator>& rev_it2) { return (rev_it2.base() - rev_it.base()); }
 
+	template <typename Iterator>
+	std::ostream &operator<< (std::ostream& os, const reverse_iterator<Iterator> lhs) {
+		os << lhs.base();
+		return (os);
+	}
 }
 #endif
