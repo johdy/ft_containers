@@ -37,12 +37,8 @@ namespace ft {
 					}
 			}
 			template <class InputIterator>
-			Vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type* = NULL) {
+			Vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type = NULL) {
 				size_type size = last - first;
-
-				//if ( typeid(ft::iterator_traits<InputIterator>::iterator_category) != typeid(std::random_access_iterator_tag) ) {
-				//	Vector()
-				//}
 				_capacity = size;
 				_size = size;
 				_allocator = alloc;
@@ -70,9 +66,7 @@ namespace ft {
 			}
 
 			~Vector() {
-				while (_size--) {
-					_allocator.destroy(_begin + _size);
-				}
+				this->clear();
 				_allocator.deallocate(_begin, _capacity);
 			}
 
@@ -99,7 +93,7 @@ namespace ft {
 					reserve(n);
 				}
 				while ( n > _size )
-					_allocator.construct(_begin + ++_size, val);
+					_allocator.construct(_begin + _size++, val);
 			}
 
 			bool empty() const { return (!_size); }
@@ -114,8 +108,10 @@ namespace ft {
 					new_begin = _allocator.allocate(n);
 					while (cpt < _size) {
 						_allocator.construct(new_begin + cpt, _begin[cpt]);
+						_allocator.destroy(_begin + cpt);
 						++cpt;
 					}
+					_allocator.deallocate(_begin, _capacity);
 					_begin = new_begin;
 					_capacity = n;
 			}
@@ -142,18 +138,17 @@ namespace ft {
 			const_reference back() const { return at(_size); }
 
 			void clear() {
-				while (_size--) {
-					_allocator.destroy(_begin + _size);
+				while (_size) {
+					std::cout << "oucs" << *(_begin + _size - 1) << std::endl;
+					_allocator.destroy(_begin + --_size);
 				}
-				_allocator.deallocate(_begin, _capacity);
-				_capacity = 0;
+				std::cout << "yo" << _size << std::endl;
 			}
 
 			template <class InputIterator>
-			void assign (InputIterator first, InputIterator last) {
-				while (_size--)
-					_allocator.destroy(_begin + _size);
-				this->reserve(first - last);
+			void assign (InputIterator first, InputIterator last, typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type = NULL) {
+				this->clear();
+				this->reserve(last - first);
 				_size = last - first;
 				size_t cpt = 0;
 				while (cpt < _size) {
@@ -162,6 +157,16 @@ namespace ft {
 				}
 			}
 
+			void assign (size_type n, const value_type& val) {
+				this->clear();
+				this->reserve(n);
+				_size = n;
+				size_t cpt = 0;
+				while (cpt < _size) {
+					_allocator.construct(_begin + cpt, val);
+					cpt++;
+				}
+			}
 			/*iterator insert (iterator position, const value_type& val) {
 
 			}
