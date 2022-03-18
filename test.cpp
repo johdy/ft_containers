@@ -148,9 +148,75 @@ void test_ft_vector_capacity(ft::Vector<int> &vec) {
 	std::cout << *(vec2.begin() + 1) << std::endl;
 }
 
+void test_ft_vector_accesseurs(ft::Vector<int> &vec) {
+	std::cout << "---------------------- Tests accesseurs ----------------------" << std::endl;	
+	std::cout << "-------------> vec[0]" << std::endl;	
+	std::cout << vec[0] << std::endl;
+	std::cout << "-------------> vec[3]" << std::endl;	
+	std::cout << vec[3] << std::endl;
+	std::cout << "-------------> vec.at(1)" << std::endl;	
+	try {std::cout << vec.at(1) << std::endl;}
+	catch (std::exception& e) {std::cout << e.what() << std::endl;}
+	std::cout << "-------------> vec.at(4)" << std::endl;	
+	try {std::cout << vec.at(4) << std::endl;}
+	catch (std::exception& e) {std::cout << e.what() << std::endl;}
+	std::cout << "-------------> vec.at(-532)" << std::endl;	
+	try {std::cout << vec.at(-532) << std::endl;}
+	catch (std::exception& e) {std::cout << e.what() << std::endl;}
+	vec[0] = 55;
+	vec[3] = 243;
+	std::cout << "-------------> vec[0] = 55" << std::endl;	
+	std::cout << "-------------> vec[3] = 243" << std::endl;	
+	std::cout << "-------------> vec.front()" << std::endl;	
+	std::cout << vec.front() << std::endl;
+	std::cout << "-------------> vec.back()" << std::endl;	
+	std::cout << vec.back() << std::endl;
+}
+
+void test_ft_vector_modifiers(ft::Vector<int> &vec) {
+	std::cout << "---------------------- Tests modifiers ----------------------" << std::endl;
+	ft::Vector<int> vec2(vec);
+	std::cout << "-------------> assign par range (10, 7)" << std::endl;
+	vec.assign(10, 7);
+	display_vector(vec);
+	std::cout << "-------------> assign par fill (vec2.begin(), vec2.end())" << std::endl;
+	vec.assign(vec2.begin(), vec2.end());
+	display_vector(vec);
+	std::cout << "-------------> assign par range (vec2.begin(), vec2.end() - 2)" << std::endl;
+	vec.assign(vec2.begin(), vec2.end() - 2);
+	display_vector(vec);
+	std::cout << "-------------> push_back vec2 : 9, 14, 22, 0, 8" << std::endl;
+	vec2.push_back(9);
+	vec2.push_back(14);
+	vec2.push_back(22);
+	vec2.push_back(0);
+	vec2.push_back(8);
+	display_vector(vec2);
+	std::cout << "-------------> pop_back vec2" << std::endl;
+	vec2.pop_back();
+	display_vector(vec2);
+	std::cout << "-------------> erase une seule valeur (vec.begin() + 1)" << std::endl;
+	vec.erase(vec.begin());
+	display_vector(vec);
+	std::cout << "-------------> erase une range (vec2.begin() + 3, vec2.end() - 2)" << std::endl;
+	vec2.erase(vec2.begin() + 3, vec2.end() - 2);
+	display_vector(vec2);
+	ft::Vector<int>::iterator it = vec.begin();
+	vec.swap(vec2);
+	std::cout << "-------------> swap vec et vec2" << std::endl;
+	std::cout << "----> vec" << std::endl;
+	display_vector(vec);
+	std::cout << "----> vec2" << std::endl;
+	display_vector(vec2);
+	std::cout << "----> valeur de l'itérateur begin de l'ancien vec" << std::endl;
+	std::cout << *it << std::endl;
+}
+
 int main() {
 	ft::Vector<int> vec(4, 3);
 	test_ft_vector_constructeurs(vec);
 	test_ft_vector_iterateurs(vec);
 	test_ft_vector_capacity(vec);
+	test_ft_vector_accesseurs(vec);
+	test_ft_vector_modifiers(vec);
 }

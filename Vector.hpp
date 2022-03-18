@@ -120,13 +120,13 @@ namespace ft {
 			const reference operator[](size_type n) const { return ( *(_begin + n) ); }
 
 			reference at(size_type n) {
-				if (n > _size)
+				if (n >= _size)
 					throw std::out_of_range("oor");
 				return ( *(_begin + n) ); 
 			}
 
 			const reference at(size_type n) const {
-				if (n > _size)
+				if (n >= _size)
 					throw std::out_of_range("oor");
 				return ( *(_begin + n) ); 
 			}
@@ -134,8 +134,8 @@ namespace ft {
 			reference front() { return at(0); }
 			const_reference front() const { return at(0); }
 
-			reference back() { return at(_size); }
-			const_reference back() const { return at(_size); }
+			reference back() { return at(_size - 1); }
+			const_reference back() const { return at(_size - 1); }
 
 			void clear() {
 				while (_size) {
@@ -152,7 +152,7 @@ namespace ft {
 				_size = last - first;
 				size_t cpt = 0;
 				while (cpt < _size) {
-					_allocator.construct(_begin + cpt, first.base() + cpt);
+					_allocator.construct(_begin + cpt, *(first.base() + cpt));
 					cpt++;
 				}
 			}
@@ -167,6 +167,17 @@ namespace ft {
 					cpt++;
 				}
 			}
+
+			void push_back (const value_type& val) {
+				if (_size == _capacity)
+					this->reserve(_size + 1);
+				_allocator.construct(_begin + _size++, val);
+			}
+
+			void pop_back() {
+				_allocator.destroy(_begin + --_size);
+			}
+
 			/*iterator insert (iterator position, const value_type& val) {
 
 			}
@@ -175,6 +186,53 @@ namespace ft {
     		void insert (iterator position, InputIterator first, InputIterator last) {
     			if (_size + (last - first) > _capacity)
     		}*/
+
+
+
+    		iterator erase (iterator position) {
+    			iterator vec_end(this->end());
+    			iterator head(position);
+
+    			if (position == vec_end)
+    				return (position);
+    			while (++head != vec_end)
+    				*(head - 1) = *head;
+    			_allocator.destroy(_begin + --_size);
+    			return (position);
+    		}
+
+    		iterator erase (iterator first, iterator last) {
+    			size_t i = 0;
+    			iterator vec_end(this->end());
+
+    			if (first == vec_end)
+    				return (first);
+    			while ((last + i) != vec_end) {
+    				*(first + i) = *(last + i);
+    				++i;
+    			}
+    			this->resize(_size - (last - first));
+    			return (first);
+    		}
+
+    		void swap (Vector& x) {
+				pointer tmp_begin = _begin;
+				size_type tmp_cap = _capacity;
+				size_type tmp_size = _size;
+				allocator_type tmp_alloc = _allocator;
+
+				_begin = x._begin;
+				_capacity = x._capacity;
+				_size = x._size;
+				_allocator = x._allocator;
+
+				x._allocator = tmp_alloc;
+				x._size = tmp_size;
+				x._capacity =  tmp_cap;
+				x._begin = tmp_begin;
+    		}
+
+    		allocator_type get_allocator() const { return (_allocator); }
 	};
 }
 
