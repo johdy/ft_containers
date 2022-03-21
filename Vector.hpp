@@ -178,11 +178,70 @@ namespace ft {
 				_allocator.destroy(_begin + --_size);
 			}
 
-			/*iterator insert (iterator position, const value_type& val) {
+			void copy_up_until(iterator position, pointer &new_begin) {
+				iterator it(this->begin());
+				size_type cpt = 0;
 
+				while (it != position) {
+					_allocator.construct(new_begin + cpt, _begin[cpt]);
+					_allocator.destroy(_begin + cpt++);
+					++it;
+				}
 			}
 
-			template <class InputIterator>
+			size_t copy_end(iterator position, pointer begin, const value_type& val, bool erase = 0) {
+				iterator end = this->end() - 1;
+				size_t cpt = _size - 1;
+
+				while (position != end) {
+					*(begin + cpt) = *(_begin + cpt - 1);
+					--cpt;
+					if (erase)
+						_allocator.destroy(_begin + cpt);
+					--end;
+				}
+				return (cpt);
+			}
+
+			iterator insert (iterator position, const value_type& val) {
+				pointer new_begin;
+				size_t loc;
+
+				if (_size++ == _capacity) {
+					new_begin = _allocator.allocate(_size);
+					copy_up_until(position, new_begin);
+					loc = copy_end(position, new_begin, val, 1);
+					_allocator.deallocate(_begin, _capacity);
+					_begin = new_begin;
+					++_capacity;
+				}
+				else
+					loc = copy_end(position, _begin, val);
+				*(_begin + loc) = val;
+				return (this->begin() + loc);
+			}
+
+			void insert (iterator position, size_type n, const value_type& val) {
+				pointer new_begin;
+				size_t loc;
+
+				if (_size + n > _capacity) {
+					_size += n;
+					_capacity = _size;
+					new_begin = _allocator.allocate(_size);
+					copy_up_until(position, new_begin);
+					loc = copy_end(position, new_begin, val, 1);
+					_allocator.deallocate(_begin, _capacity);
+					_begin = new_begin;
+				}
+				else {
+					_size += n;
+					loc = copy_end(position + n, _begin, val);
+				}
+				while (n)
+				*(_begin + loc - --n) = val;
+			}
+			/*template <class InputIterator>
     		void insert (iterator position, InputIterator first, InputIterator last) {
     			if (_size + (last - first) > _capacity)
     		}*/

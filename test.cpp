@@ -210,6 +210,19 @@ void test_ft_vector_modifiers(ft::Vector<int> &vec) {
 	display_vector(vec2);
 	std::cout << "----> valeur de l'itérateur begin de l'ancien vec" << std::endl;
 	std::cout << *it << std::endl;
+	std::cout << vec.capacity() << std::endl;
+	vec.insert(vec.begin() + 3, 3, 101);
+	display_vector(vec);
+	vec.insert(vec.end() - 1, 31);
+	vec.insert(vec.end() - 1, 32);
+	vec.insert(vec.end() - 1, 33);
+	vec.insert(vec.end() - 1, 34);
+	vec.insert(vec.end() - 1, 35);
+	vec.insert(vec.end() - 1, 36);
+	display_vector(vec);
+	std::cout << vec.capacity() << std::endl;
+	std::cout << vec.size() << std::endl;
+
 }
 
 int main() {
