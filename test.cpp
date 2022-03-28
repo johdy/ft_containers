@@ -246,6 +246,7 @@ void test_ft_vector_modifiers(NAMESPACE::vector<int> &vec) {
 	std::cout << "-------------> insert de ranges" << std::endl;
 	NAMESPACE::vector<int> vec3(vec);
 	std::cout << "----> vector<int> vec3(vec)" << std::endl;
+	display_vector(vec3);
 	std::cout << "----> vec.insert(vec.begin() + 10, vec3.begin(), vec3.end() - 1)" << std::endl;
 	vec.insert(vec.begin() + 10, vec3.begin(), vec3.end() - 1);
 	display_vector(vec);
