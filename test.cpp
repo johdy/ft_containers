@@ -1,7 +1,9 @@
 #include "pair.hpp"
 #include "vector.hpp"
+#include "stack.hpp"
 #include <iostream>
 #include <vector>
+#include <stack>
 template <class T>
 void display_vector(NAMESPACE::vector<T> &vec) {
 	typename NAMESPACE::vector<T>::iterator it;
@@ -273,7 +275,7 @@ void test_ft_vector_non_member_function_overloads(NAMESPACE::vector<int> &vec) {
 	std::cout << "----> (vec2 == vec)" << std::endl;
 	std::cout << (vec2 == vec) << std::endl;
 	std::cout << "----> (vec3 != vec)" << std::endl;
-	std::cout << (vec3 == vec) << std::endl;
+	std::cout << (vec3 != vec) << std::endl;
 	std::cout << "-------------> vec2[1] = -12" << std::endl;
 	vec2[1] = -12;
 	std::cout << "----> (vec >= vec2)" << std::endl;
@@ -286,12 +288,54 @@ void test_ft_vector_non_member_function_overloads(NAMESPACE::vector<int> &vec) {
 	std::cout << (vec3 > vec) << std::endl;
 }
 
+void test_ft_stack(NAMESPACE::stack<int, NAMESPACE::vector<int> > &stak) {
+	NAMESPACE::stack<int, NAMESPACE::vector<int> > stak2;
+	std::cout << "---------------------- Tests stack ----------------------" << std::endl;
+	std::cout << "-------------> empty() sur stack vide et non vide" << std::endl;
+	std::cout << stak.empty() << "/" << stak2.empty() << std::endl;
+	std::cout << "-------------> size() sur stack vide et non vide" << std::endl;
+	std::cout << stak.size() << "/" << stak2.size() << std::endl;
+	std::cout << "-------------> stack.top()" << std::endl;
+	std::cout << stak.top() << std::endl;
+	std::cout << "-------------> stack.push_back(1999)" << std::endl;
+	stak.push(1999);
+	std::cout << "-------------> stack.top(), stack.size()" << std::endl;
+	std::cout << stak.top() << "//" << stak.size() << std::endl;
+	std::cout << "-------------> stack.poppx6()" << std::endl;
+	stak.pop();
+	stak.pop();
+	stak.pop();
+	stak.pop();
+	stak.pop();
+	stak.pop();
+	std::cout << "-------------> stack.top(), stack.size()" << std::endl;
+	std::cout << stak.top() << "//" << stak.size() << std::endl;
+	std::cout << "-------------> stack3 et stack4 copies de vec, on pop stack4" << std::endl;
+	NAMESPACE::stack<int, NAMESPACE::vector<int> > stak3(stak);
+	NAMESPACE::stack<int, NAMESPACE::vector<int> > stak4(stak);
+	stak4.pop();
+	std::cout << "----> (stak3 > stak)" << std::endl;
+	std::cout << (stak3 > stak) << std::endl;
+	std::cout << "----> (stak3 == stak)" << std::endl;
+	std::cout << (stak3 == stak) << std::endl;
+	std::cout << "----> (stak4 != stak)" << std::endl;
+	std::cout << (stak4 != stak) << std::endl;
+	std::cout << "----> (stak >= stak3)" << std::endl;
+	std::cout << (stak >= stak3) << std::endl;
+	std::cout << "----> stak <= stak3)" << std::endl;
+	std::cout << (stak <= stak3) << std::endl;
+	std::cout << "----> stak4 < stak)" << std::endl;
+	std::cout << (stak4 < stak) << std::endl;
+}
+
 int main() {
 	NAMESPACE::vector<int> vec(4, 3);
-	/*test_ft_vector_constructeurs(vec);
+	test_ft_vector_constructeurs(vec);
 	test_ft_vector_iterateurs(vec);
 	test_ft_vector_capacity(vec);
-	test_ft_vector_accesseurs(vec);*/
+	test_ft_vector_accesseurs(vec);
 	test_ft_vector_modifiers(vec);
 	test_ft_vector_non_member_function_overloads(vec);
+	NAMESPACE::stack<int, NAMESPACE::vector<int> > stak(vec);
+	test_ft_stack(stak);
 }
