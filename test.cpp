@@ -1,9 +1,12 @@
 #include "pair.hpp"
 #include "vector.hpp"
 #include "stack.hpp"
+#include "map.hpp"
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <sys/time.h>
+
 template <class T>
 void display_vector(NAMESPACE::vector<T> &vec) {
 	typename NAMESPACE::vector<T>::iterator it;
@@ -329,6 +332,10 @@ void test_ft_stack(NAMESPACE::stack<int, NAMESPACE::vector<int> > &stak) {
 }
 
 int main() {
+	struct timeval	timebegin;
+	struct timeval	timeend;
+	gettimeofday(&timebegin, NULL);
+
 	NAMESPACE::vector<int> vec(4, 3);
 	test_ft_vector_constructeurs(vec);
 	test_ft_vector_iterateurs(vec);
@@ -338,4 +345,7 @@ int main() {
 	test_ft_vector_non_member_function_overloads(vec);
 	NAMESPACE::stack<int, NAMESPACE::vector<int> > stak(vec);
 	test_ft_stack(stak);
+	gettimeofday(&timeend, NULL);
+	std::cout << (timeend.tv_sec - timebegin.tv_sec)
+			* 1000000 + (timeend.tv_usec - timebegin.tv_usec) << " microsecondes" << std::endl;
 }

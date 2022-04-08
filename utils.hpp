@@ -4,6 +4,14 @@
 
 namespace ft {
 
+	template<class T>
+	struct node {
+		T _value;
+		node* _parent;
+		node* _left;
+		node* _right;
+	};
+
 	template<class Iter>
 	struct iterator_traits {
 		typedef typename Iter::difference_type difference_type;
