@@ -14,10 +14,10 @@ namespace ft {
 			pair(const pair<U, V>& p) : first(p.first) , second(p.second) { }
 
 			pair & operator=(const pair & rhs) {
-				if (*this != rhs)
+				if (this != &rhs)
 				{
-					this->first = rhs.first;
 					this->second = rhs.second;
+					this->first = rhs.first;
 				}
 				return (*this);
 			}
