@@ -12,6 +12,11 @@ namespace ft {
 		node* _right;
 	};
 
+	template <class T>
+	struct less {
+	  bool operator() (const T& x, const T& y) const { return x < y; }
+	};
+
 	template <bool B, class T>
 	struct enable_if_c {
 	  typedef T type;

@@ -4,7 +4,7 @@
 # include "../utils.hpp"
 
 namespace ft {
-	template< typename T >
+	template< typename T, typename U>
 	class bst_iterator {
 	public:
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::iterator_category iterator_category;
@@ -12,9 +12,12 @@ namespace ft {
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer pointer;
 		typedef	typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference reference;
 		typedef	typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type difference_type;
+		typedef U under_type;
 
 	private:
 		pointer _elem;
+		pointer _last_node;
+		pointer _first_node;
 
 		pointer leftest_from(pointer it) {
 			while (it->_left)
@@ -29,11 +32,18 @@ namespace ft {
 		}
 
 	public:
-		bst_iterator() : _elem(0) { }
-		bst_iterator( pointer x ) { this->_elem = x; }
+		bst_iterator() : _elem(0) {
+			std::cout << "default" << std::endl;
+		}
 
-		template< typename U >
-		bst_iterator( const bst_iterator<U>& other ) {
+		bst_iterator( pointer x ) { 
+			std::cout << "heur" << std::endl;
+			this->_elem = x;
+		}
+
+		template< typename V, typename X >
+		bst_iterator( const bst_iterator<V, X>& other ) {
+			std::cout << "waa" << std::endl;
 			this->_elem = other.base();
 		}
 
@@ -42,17 +52,23 @@ namespace ft {
 		bst_iterator& operator= (bst_iterator rhs) {
 			if (*this == rhs)
 				return *this;
-			this->_elem = rhs.base();
+			_elem = rhs.base();
+			_last_node = rhs._last_node;
+			_first_node = rhs._first_node;
 			return (*this);
 		}
 
-		pointer operator->() { return &(*_elem); }
+		under_type* operator->() { return &(_elem->_value); }
 
 		pointer base() const { return (_elem); }
-		reference operator*() const { return (*_elem); }
+		under_type& operator*() const { return _elem->_value; }
 
 		bst_iterator& operator++() {
-			if (_elem->_right)
+			if (_elem == NULL && _first_node) {
+				_elem = _first_node;
+				_last_node = NULL;
+			}
+			else if (_elem->_right)
 				_elem = leftest_from(_elem->_right);
 			else {
 				while (_elem->_parent) {
@@ -64,6 +80,11 @@ namespace ft {
 						_elem = _elem->_parent;
 						break ; 
 					}
+					if (_elem->_parent == _elem->_parent->_parent && _elem->_parent->_right == _elem) {
+						_last_node = _elem;
+						_elem = NULL;
+						break ;
+					}
 					_elem = _elem->_parent;
 				}
 			}
@@ -72,12 +93,16 @@ namespace ft {
 
 		bst_iterator operator++(int) {
 			bst_iterator cpy = *this;
-			++_elem;
+			++(*this);
 			return (cpy);
 		}
 
 		bst_iterator& operator--() {
-			if (_elem->_left)
+			if (_elem == NULL && _last_node) {
+				_elem = _last_node;
+				_last_node = NULL;
+			}
+			else if (_elem->_left)
 				_elem = rightest_from(_elem->_left);
 			else {
 				while (_elem->_parent) {
@@ -89,6 +114,11 @@ namespace ft {
 						_elem = _elem->_parent;
 						break ;
 					}
+					if (_elem->_parent == _elem->_parent->_parent && _elem->_parent->_left == _elem) {
+						_first_node = NULL;
+						_elem = NULL;
+						break ;
+					}
 					_elem = _elem->_parent;
 				}
 			}
@@ -96,14 +126,18 @@ namespace ft {
 		}
 
 		bst_iterator operator--(int) {
-			bst_iterator cpy = *this;
-			--_elem;
+			bst_iterator cpy;
+
+			cpy = *this;
+			--(*this);
 			return (cpy);
 		}
 
 	};
 
-	template <typename T>
-	bool operator== (const bst_iterator<T> lhs, const bst_iterator<T> rhs) { return (lhs.base() == rhs.base()); }
+	template <typename T, typename U>
+	bool operator== (const bst_iterator<T, U> lhs, const bst_iterator<T, U> rhs) { return (lhs.base() == rhs.base()); }
+	template <typename T, typename U>
+	bool operator!= (const bst_iterator<T, U> lhs, const bst_iterator<T, U> rhs) { return (lhs.base() != rhs.base()); }
 }
 #endif
