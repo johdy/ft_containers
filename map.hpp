@@ -5,13 +5,15 @@
 # include "iterators/bst_iterator.hpp"
 # include "utils.hpp"
 namespace ft {
-	template< class T, class Compare, class Node = ft::node<T>, class node_alloc = std::allocator<ft::node<T> > >
+	template< class T, class Compare, class value_alloc = std::allocator<T>, class Node = ft::node<T>, class node_alloc = std::allocator<ft::node<T> > >
     class BST {
     public:
 		typedef T value_type;
 		typedef typename ft::bst_iterator<Node, value_type> iterator;
 		typedef Compare key_compare;
 		typedef size_t size_type;
+		typedef typename value_type::first_type key_type;
+		typedef typename value_type::second_type second_type;
     private:
     	Node			*_root;
     	node_alloc		_node_alloc;
@@ -25,6 +27,7 @@ namespace ft {
     		if (node_to_suppr->_right) {
     			suppress_BST(node_to_suppr->_right);
     		}
+    		--_size;
     		_node_alloc.destroy(node_to_suppr);
 			_node_alloc.deallocate(node_to_suppr, 1);
     	}
@@ -34,11 +37,39 @@ namespace ft {
 
     		new_node = _node_alloc.allocate(1);
     		_node_alloc.construct(new_node, Node());
+    		//_node_alloc.construct(new_node->_value, value_type());
     		new_node->_parent = NULL;
     		new_node->_left = NULL;
     		new_node->_right = NULL;
     		return (new_node);
     	}
+
+		void	add_range_except(iterator first, iterator last, iterator avoid) {
+    		iterator middle = first;
+    		size_t size = 0;
+
+    		while (middle != last) {
+    			++size;
+    			++middle;
+    		}
+    		if (size == 0)
+    			return ;
+    		size = size / 2 + 1;
+    		while (size--)
+    			--middle;
+    		if (middle != avoid)
+    			this->add(*middle);
+    		iterator it = middle;
+    		while (it-- != first) {
+    			if (it != avoid)
+    				this->add(*it);
+    		}
+    		it = middle;
+    		while (it++ != last) {
+    			if (it != avoid)
+    				this->add(*it);
+    		}
+		}
 
 	public:
 
@@ -104,23 +135,29 @@ namespace ft {
 
     	size_type	size() {return _size;}
 
-    	void add(T& pair) {
+    	ft::pair<iterator,bool> add(const T& pair, bool hint = false, iterator hint_it = NULL) {
     		++_size;
     		if (_root->_parent == NULL) {
     			_root->_value = pair;
     			_root->_parent = _root;
-    			return ;
+    			return (ft::pair<iterator,bool>(iterator(_root), true));
     		}
 
-    		Node *next = _root->_parent;
-    		Node *parent = NULL;
+    		Node *next;
+    		Node *parent;
 
+    		if (hint)
+    			 next = hint_it.base();
+    		else
+    			next = _root;
     		while (next != NULL) {
     			parent = next;
     			if (_comp(pair.first, next->_value.first))
     				next = next->_left;
-    			else if (!_comp(pair.first, next->_value.first))
+    			else if (_comp(next->_value.first, pair.first))
     				next = next->_right;
+    			else
+    				return (ft::pair<iterator,bool>(iterator(next), false));
     		}
      		Node *new_node = alloc_new_node();
     		new_node->_value = pair;
@@ -129,10 +166,11 @@ namespace ft {
 			else if (!_comp(pair.first, parent->_value.first))
 				parent->_right = new_node;
 			new_node->_parent = parent;
+			return (ft::pair<iterator,bool>(iterator(new_node), true));
 		}
 
 		template<class InputIterator>
-		void	add_range(InputIterator first, InputIterator last) {
+		void	add_range(InputIterator first, InputIterator last, InputIterator avoid = NULL) {
     		InputIterator middle = first;
     		size_t size = 0;
 
@@ -140,16 +178,94 @@ namespace ft {
     			++size;
     			++middle;
     		}
-    		size = size / 2;
+    		size = size / 2 + 1;
     		while (size--)
     			--middle;
     		this->add(*middle);
     		InputIterator it = middle;
     		while (it-- != first)
     			this->add(*it);
-    		it = middle;
+       		it = middle;
     		while (++it != last)
-    			this->add(*it);
+   				this->add(*it);
+		}
+
+		iterator lower_bound (const key_type& k) {
+			Node *head = _root;
+			iterator candidate = this->end();
+
+			while (head) {
+				if (!_comp(head->_value.first, k))
+					candidate = head;
+				if (_comp(k, head->_value.first))
+					head = head->_left;
+				else if (_comp(head->_value.first, k))
+					head = head->_right;
+				else
+					return (candidate);
+			}
+			return (this->end());
+		}
+
+		iterator upper_bound (const key_type& k) {
+			Node *head = _root;
+			iterator candidate = this->end();
+
+			while (head) {
+				if (_comp(k, head->_value.first))
+					candidate = head;
+				if (_comp(k, head->_value.first))
+					head = head->_left;
+				else
+					head = head->_right;
+			}
+			return (candidate);
+		}
+
+
+		iterator find (const key_type& k) const {
+			Node *head = _root;
+
+			while (head) {
+				if (_comp(head->_value.first, k))
+					head = head->_right;
+				else if (_comp(k, head->_value.first))
+					head = head->_left;
+				else
+					return (iterator(head));
+			}
+			return (this->end());
+		}
+
+		void erase(iterator position) {
+			Node *suppr_node = position.base();
+			Node *determine_range = suppr_node;
+
+			if (suppr_node->_parent->_left == suppr_node)
+				suppr_node->_parent->_left = NULL;
+			else
+				suppr_node->_parent->_right = NULL;
+
+			while (determine_range->_left)
+				determine_range = determine_range->_left;
+			iterator first(determine_range);
+
+			determine_range = suppr_node;
+			while (determine_range->_right)
+				determine_range = determine_range->_right;
+			iterator last(determine_range);
+			std::cout << "helo" << std::endl;
+			this->add_range_except(first, last, position);
+			this->suppress_BST(suppr_node);
+		}
+
+		size_type erase (const key_type& k) {
+			iterator locate = this->find(k);
+
+			if (locate == this->end())
+				return (0);
+			this->erase(locate);
+			return (1);
 		}
 	};
 
@@ -219,8 +335,26 @@ namespace ft {
 		bool empty() const { return (!_bst.size()); }
 		size_type size() const { return (_bst.size()); }
 		size_type max_size() const { return (_alloc.max_size()); }
-		void insert(value_type pair) {
-			_bst.add(pair);
+
+		pair<iterator,bool> insert (const value_type& val) {
+			return (_bst.add(val));
+		}
+
+		iterator insert (iterator position, const value_type& val) {
+			return (_bst.add(val, true, position).first);	
+		}
+
+		template <class InputIterator>
+ 		void insert (InputIterator first, InputIterator last) {
+ 			_bst.add(first, last);
+  		}
+
+		void erase (iterator position) {
+			return (_bst.erase(position));
+		}
+
+		size_type erase (const key_type& k) {
+			return (_bst.erase(k));
 		}
 
 		iterator begin() const {return _bst.begin();}
@@ -229,9 +363,40 @@ namespace ft {
 		iterator end() const {return _bst.end();}
 		//const_iterator end() {return _bst.end();}
 
+		mapped_type& operator[] (const key_type& k) {
+			iterator it = _bst.find(k);
+			if (it != this->end())
+				return (it->second);
+			ft::pair<key_type,mapped_type> pair;
+			pair.first = k;
+			return (_bst.add(pair).first->second);
+		}
+
+
 		void display_tree() {
 			_bst.display_tree();
 		}
+
+		iterator find (const key_type& k) { return (_bst.find(k)); }
+
+		size_type count (const key_type& k) const { return ((_bst.find(k) != this->end())); }
+
+		iterator lower_bound (const key_type& k) { return (_bst.lower_bound(k)); }
+
+		iterator upper_bound (const key_type& k) { return (_bst.upper_bound(k)); }
+
+		ft::pair<iterator,iterator> equal_range (const key_type& k) {
+			iterator it = _bst.find(k);
+			iterator end = _bst.end();
+			if (it == end) {
+				it = _bst.upper_bound(k);
+				return (ft::pair<iterator,iterator>(it, it));
+			}
+			iterator itplus = it;
+			return (ft::pair<iterator,iterator>(it, ++itplus));
+		}
+
+		allocator_type get_allocator() const { return (_alloc); }
 
 	private:
 		key_compare							_comp;

@@ -27,14 +27,28 @@ void test_ft_map_iterators(NAMESPACE::map<std::string, int> &test) {
 	std::cout << it->first << std::endl;
 	--it;
 	std::cout << it->first << std::endl;
+	NAMESPACE::pair<std::string, int> paire1("10", 5);
+	NAMESPACE::pair<std::string, int> paire2("11", 5);
+	test.insert(paire1);
+	test.insert(it, paire2);
+	test.display_tree();
+	test.erase(it);
+	test.display_tree();
+	it = test.begin();
+	std::cout << (it)->first << std::endl;
+	test.erase(it);
+	test.erase("b");
+	test.display_tree();
 	//*it = *(++it);
 }
 
 void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
+	std::cout << "----------- début tests test_ft_map_constructeur -------------" << std::endl;
 	NAMESPACE::map<std::string, int> map2(map);
-
-	std::cout << "ohh" << std::endl;
-	//map2.display_tree();
+	std::cout << "-----> constructeur par range" <<std::endl;
+	NAMESPACE::map<std::string, int> map3(map2.begin(),--map2.end());
+	std::cout << "CA DEVFRAIT ETRE f : " << (--(map2.end()))->first << std::endl;
+	map3.display_tree();
 	//map.display_tree();
 }
 
@@ -61,6 +75,12 @@ int main() {
 	map.insert(paire5);
 	map.insert(paire6);
 	//map.display_tree();
+	map["d"] = 17;
+	map["123"];
+	std::cout << "ohh " << map.lower_bound("f")->first << std::endl;
+	std::cout << "ahh " << map.upper_bound("ee")->first << std::endl;
+	ft::pair<NAMESPACE::map<std::string, int>::iterator,NAMESPACE::map<std::string, int>::iterator> range = map.equal_range("cbd");
+	std::cout << "range : " << range.first->first << "/" << range.second->first << std::endl;
 	test_ft_map_constructeur(map);
 	std::cout << "TEST FT_MAP_ITERATEURS" << std::endl;
 	test_ft_map_iterators(map);

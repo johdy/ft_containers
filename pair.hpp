@@ -7,6 +7,8 @@ namespace ft {
 			T1 first;
 			T2 second;
 
+			typedef  T1 first_type;
+			typedef  T2 second_type;
 			//constructeurs (defaut, initialisation, copie)
 			pair() : first(T1()) , second(T2()) { }
 			pair(const T1& x, const T2& y) : first(x) , second(y) { }

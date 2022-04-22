@@ -33,17 +33,14 @@ namespace ft {
 
 	public:
 		bst_iterator() : _elem(0) {
-			std::cout << "default" << std::endl;
 		}
 
 		bst_iterator( pointer x ) { 
-			std::cout << "heur" << std::endl;
 			this->_elem = x;
 		}
 
 		template< typename V, typename X >
 		bst_iterator( const bst_iterator<V, X>& other ) {
-			std::cout << "waa" << std::endl;
 			this->_elem = other.base();
 		}
 
@@ -71,17 +68,19 @@ namespace ft {
 			else if (_elem->_right)
 				_elem = leftest_from(_elem->_right);
 			else {
+				_last_node = _elem;
 				while (_elem->_parent) {
 					if (_elem == _elem->_parent) {
 						_elem = leftest_from(_elem);
+						_last_node = NULL;
 						break ;
 					}
 					if (_elem->_parent->_left == _elem) {
 						_elem = _elem->_parent;
+						_last_node = NULL;
 						break ; 
 					}
 					if (_elem->_parent == _elem->_parent->_parent && _elem->_parent->_right == _elem) {
-						_last_node = _elem;
 						_elem = NULL;
 						break ;
 					}
@@ -105,17 +104,19 @@ namespace ft {
 			else if (_elem->_left)
 				_elem = rightest_from(_elem->_left);
 			else {
+				_first_node = _elem;
 				while (_elem->_parent) {
 					if (_elem == _elem->_parent) {
 						_elem = rightest_from(_elem);
+						_first_node = NULL;
 						break ;
 					}
 					if (_elem->_parent->_right == _elem) {
 						_elem = _elem->_parent;
+						_first_node = NULL;
 						break ;
 					}
 					if (_elem->_parent == _elem->_parent->_parent && _elem->_parent->_left == _elem) {
-						_first_node = NULL;
 						_elem = NULL;
 						break ;
 					}
