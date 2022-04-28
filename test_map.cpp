@@ -39,6 +39,14 @@ void test_ft_map_iterators(NAMESPACE::map<std::string, int> &test) {
 	test.erase(it);
 	test.erase("b");
 	test.display_tree();
+	test.erase("ee");
+	test.erase("123");
+	test.erase("c");
+	test.erase("f");
+	test.display_tree();
+	test.erase("11");
+	std::cout<< "ko"<< std::endl;
+	test.display_tree();
 	//*it = *(++it);
 }
 

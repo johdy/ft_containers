@@ -60,12 +60,12 @@ namespace ft {
     		if (middle != avoid)
     			this->add(*middle);
     		iterator it = middle;
-    		while (it-- != first) {
+	  		while (it-- != first) {
     			if (it != avoid)
     				this->add(*it);
     		}
-    		it = middle;
-    		while (it++ != last) {
+	   		it = middle;
+    		while (++it != last) {
     			if (it != avoid)
     				this->add(*it);
     		}
@@ -227,6 +227,7 @@ namespace ft {
 			Node *head = _root;
 
 			while (head) {
+				std::cout << k << " // " << head->_value.first << std::endl;
 				if (_comp(head->_value.first, k))
 					head = head->_right;
 				else if (_comp(k, head->_value.first))
@@ -237,10 +238,36 @@ namespace ft {
 			return (this->end());
 		}
 
+		void root_erasing(Node *val) {
+			Node *new_root = alloc_new_node();
+
+			new_root->_value = val->_value;
+			_root = new_root;
+			_root->_parent = _root;
+			return;
+		}
+
 		void erase(iterator position) {
 			Node *suppr_node = position.base();
 			Node *determine_range = suppr_node;
 
+			if (suppr_node == _root) {
+				std::cout << _size << std::endl;
+				if (_size == 1) {
+					clear();
+					std::cout << "ohohoh" << std::endl;
+					return ;
+				}
+				iterator beg = begin();
+				iterator en = end();
+				if (_root->_left != NULL)
+					root_erasing(_root->_left);
+				else if (_root->_right != NULL)
+					root_erasing(_root->_right);
+				this->add_range_except(beg, en, position);
+				this->suppress_BST(suppr_node);
+				return;
+			}
 			if (suppr_node->_parent->_left == suppr_node)
 				suppr_node->_parent->_left = NULL;
 			else
@@ -262,10 +289,40 @@ namespace ft {
 		size_type erase (const key_type& k) {
 			iterator locate = this->find(k);
 
-			if (locate == this->end())
+			if (locate == this->end()) {
+				std::cout << end()->first << std::endl;
 				return (0);
+			}
+			std::cout << "ben" << std::endl;
 			this->erase(locate);
 			return (1);
+		}
+
+		void erase (iterator first, iterator last) {
+			size_t size_beg = 0;
+			iterator beg = begin();
+
+			while (beg++ != first)
+				++size_beg;
+			--beg;
+			size_t size_end = 0;
+			iterator end = end();
+			while (++last != end)
+				++size_end;
+
+			size_t i = 0;
+			iterator middle;
+			if (size_beg < size_end) {
+				while (size_beg - i++ > (size_beg + size_end) / 2)
+					--beg;
+				middle = beg;
+			}
+			else {
+				while (size_end - i++ > (size_beg + size_end) / 2)
+					++end;
+				middle = end;
+			}
+			root_erasing(*middle);
 		}
 	};
 
