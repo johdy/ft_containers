@@ -43,28 +43,31 @@ namespace ft {
     		return (new_node);
     	}
 
-		void	add_range_except(iterator first, iterator last, iterator avoid) {
+		void	add_range_except(iterator first, iterator last_included, iterator avoid) {
     		iterator middle = first;
     		size_t size = 0;
 
-    		while (middle != last) {
+			std::cout << first->first << "+" << last_included->first << std::endl;
+    		while (middle != last_included) {
     			++size;
     			++middle;
     		}
     		if (size == 0)
     			return ;
     		size = size / 2 + 1;
-    		while (size--)
+			std::cout << size << std::endl;
+    		while (--size)
     			--middle;
     		if (middle != avoid)
     			this->add(*middle);
     		iterator it = middle;
+			std::cout << it->first << "-" << middle->first << std::endl;
 	  		while (it-- != first) {
     			if (it != avoid)
     				this->add(*it);
     		}
 	   		it = middle;
-    		while (++it != last) {
+    		while (it++ != last_included) {
     			if (it != avoid)
     				this->add(*it);
     		}
@@ -253,11 +256,10 @@ namespace ft {
 				std::cout << _size << std::endl;
 				if (_size == 1) {
 					clear();
-					std::cout << "ohohoh" << std::endl;
 					return ;
 				}
 				iterator beg = begin();
-				iterator en = end();
+				iterator en = --end();
 				if (_root->_left != NULL)
 					root_erasing(_root->_left);
 				else if (_root->_right != NULL)
@@ -274,12 +276,10 @@ namespace ft {
 			while (determine_range->_left)
 				determine_range = determine_range->_left;
 			iterator first(determine_range);
-
 			determine_range = suppr_node;
 			while (determine_range->_right)
 				determine_range = determine_range->_right;
 			iterator last(determine_range);
-			std::cout << "helo" << std::endl;
 			this->add_range_except(first, last, position);
 			this->suppress_BST(suppr_node);
 		}
@@ -288,79 +288,92 @@ namespace ft {
 			iterator locate = this->find(k);
 
 			if (locate == this->end()) {
-				std::cout << end()->first << std::endl;
 				return (0);
 			}
-			std::cout << "ben" << std::endl;
 			this->erase(locate);
 			return (1);
 		}
 
-		void erase (iterator first, iterator last) {
-			iterator mem_beg = this->begin();
-			iterator mem_end = --(this->end());
-
-			size_t size_beg = 0;
-			iterator beg = this->begin();
-			Node *old_root = _root;
-
-			while (beg++ != first)
-				++size_beg;
-			--beg;
-			size_t size_end = 0;
-			iterator end = this->end();
-			while (end-- != last)
-				++size_end;
-
-			std::cout << "sizes " << size_beg << " // " << size_end << std::endl;
-			size_t i = 0;
-			iterator middle_to_end;
-			if (size_beg > size_end) {
-				while (size_beg - i++ > (size_beg + size_end) / 2)
-					--beg;
-				middle_to_end = beg;
-			}
-			else {
-				while (size_end - i++ > (size_beg + size_end) / 2)
-					++end;
-				middle_to_end = end;
-			}
-			std::cout << (*middle_to_end).first << std::endl;
-			iterator middle_to_beg = middle_to_end;
-			root_erasing(middle_to_beg.base());
-			while (1) {
-				std::cout << "i = " << i - 1 << std::endl;
-				if (--i == 0) {
-					if (size_beg > size_end)
-						middle_to_end = last;
-					else
-						middle_to_beg = first;
-				}
-				std::cout << "BEFORE ADD " << (*middle_to_end).first << " / / / " << (*middle_to_beg).first << std::endl;
-				add(*(++middle_to_end));
-				add(*(--middle_to_beg));
-				std::cout << "AFTER ADD " << (*middle_to_end).first << " / / / " << (*middle_to_beg).first << std::endl;
-				std::cout << (*mem_end).first << std::endl;
-				if (middle_to_beg == mem_beg && middle_to_end == mem_end)
-					break ;
-				if (middle_to_beg == mem_beg) {
-					if (--i == 0)
-						add(*mem_end);
-					else
-						add(*(++middle_to_end));
-					break ;
-				}
-				else if (middle_to_end == mem_end) {
-					std::cout << "woop woop" << std::endl;
-					if (--i == 0)
-						add(*mem_beg);
-					else
-						add(*(--middle_to_beg));
-					break ;
-				}
-			}
-			suppress_BST(old_root);
+		iterator leftest_from(Node *nd) {
+			std::cout << "oy" << std::endl;
+			while (nd->_left)
+				nd = nd->_left;
+			return (nd);
 		}
+
+		iterator rightest_from(Node *nd) {
+			while (nd->_right)
+				nd = nd->_right;
+			return (nd);
+		}
+
+		bool is_parent(Node *nd, Node *parent_candidate) {
+			while (nd->_parent != nd) {
+				if (nd == parent_candidate)
+					return (true);
+				nd = nd->_parent;;
+			}
+			return (false);
+		}
+
+		void erase (iterator first, iterator last) {
+			iterator head = last;
+			key_type stop = first->first;
+			key_type find_last = last->first;
+			while (1) {
+				std::cout << stop << std::endl;
+				if ((--head)->first == stop) 
+					break ;
+				else
+					std::cout << head->first << "//" << stop << std::endl;
+				std::cout << head->first << std::endl;
+
+				this->erase(head);
+				head = this->find(find_last);
+				this->display_tree();
+			}
+			std::cout << "nonono" << std::endl;
+			this->erase(head);
+		}
+		/*void erase (iterator first, iterator last) {
+			Node *lower_to_readd = first.base()->_left;
+			Node *greater_to_readd = (--last).base()->_right;
+			Node *greatest_parent = first.base();
+			Node *greatest_parent_mem = greatest_parent;
+			Node *greatest_parent_it = greatest_parent_mem;
+
+			while (first != last) {
+				std::cout << first->first << std::endl;
+				while (is_parent(first.base(), greatest_parent) && first != last) {
+					++first;
+				}
+				if (greatest_parent->_parent->_left == greatest_parent)
+					greatest_parent->_parent->_left = NULL;
+				else
+					greatest_parent->_parent->_right = NULL;
+				greatest_parent->_parent = NULL;
+				if (greatest_parent != greatest_parent_mem) {
+					std::cout << "im " << greatest_parent_it->_parent << std::endl;
+					greatest_parent_it = greatest_parent_mem;
+					while (greatest_parent_it->_parent) {
+						greatest_parent_it = greatest_parent_it->_parent;
+					}
+					greatest_parent_it->_parent = greatest_parent;
+				}
+				greatest_parent = first.base();
+			}
+			std::cout << lower_to_readd << "//" << greater_to_readd << std::endl;
+			if (lower_to_readd)
+				this->add_range(leftest_from(lower_to_readd), rightest_from(lower_to_readd));
+			if (greater_to_readd)
+				this->add_range(leftest_from(greater_to_readd), rightest_from(greater_to_readd));
+			std::cout << "ok" << std::endl;
+			while (greatest_parent_mem) {
+				greatest_parent_it = greatest_parent_mem->_parent;
+				this->suppress_BST(greatest_parent_mem);
+				greatest_parent_mem = greatest_parent_it;
+			}
+		}*/
 	};
 
 	template< class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<pair<const Key,T> > >

@@ -32,23 +32,23 @@ void test_ft_map_iterators(NAMESPACE::map<std::string, int> &test) {
 	test.insert(paire1);
 	test.insert(it, paire2);
 	test.display_tree();
-	std::cout << (it)->first << std::endl;
+	std::cout << (++it)->first << std::endl;
 	test.display_tree();
-	test.erase(++(test.begin()), ++it);
+	test.erase((test.find("ee")));
 	test.display_tree();
-	test.erase((test.find("c")), test.end());
+	//test.erase(++(test.begin()), --test.end());
+	//test.erase((test.find("c")), test.end());
+	test.erase("b");
 	test.display_tree();
-/*	test.erase("b");
-	test.display_tree();
-	test.erase("ee");
+	//test.erase("ee");
 	test.erase("123");
 	test.erase("c");
 	test.erase("f");
 	test.display_tree();
-	test.erase("11");
+	test.erase("ee");
 	std::cout<< "ko"<< std::endl;
 	test.display_tree();
-*/
+
 }
 
 void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
