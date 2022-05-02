@@ -37,7 +37,6 @@ namespace ft {
 
     		new_node = _node_alloc.allocate(1);
     		_node_alloc.construct(new_node, Node());
-    		//_node_alloc.construct(new_node->_value, value_type());
     		new_node->_parent = NULL;
     		new_node->_left = NULL;
     		new_node->_right = NULL;
@@ -227,7 +226,6 @@ namespace ft {
 			Node *head = _root;
 
 			while (head) {
-				std::cout << k << " // " << head->_value.first << std::endl;
 				if (_comp(head->_value.first, k))
 					head = head->_right;
 				else if (_comp(k, head->_value.first))
@@ -299,30 +297,69 @@ namespace ft {
 		}
 
 		void erase (iterator first, iterator last) {
+			iterator mem_beg = this->begin();
+			iterator mem_end = --(this->end());
+
 			size_t size_beg = 0;
-			iterator beg = begin();
+			iterator beg = this->begin();
+			Node *old_root = _root;
 
 			while (beg++ != first)
 				++size_beg;
 			--beg;
 			size_t size_end = 0;
-			iterator end = end();
-			while (++last != end)
+			iterator end = this->end();
+			while (end-- != last)
 				++size_end;
 
+			std::cout << "sizes " << size_beg << " // " << size_end << std::endl;
 			size_t i = 0;
-			iterator middle;
-			if (size_beg < size_end) {
+			iterator middle_to_end;
+			if (size_beg > size_end) {
 				while (size_beg - i++ > (size_beg + size_end) / 2)
 					--beg;
-				middle = beg;
+				middle_to_end = beg;
 			}
 			else {
 				while (size_end - i++ > (size_beg + size_end) / 2)
 					++end;
-				middle = end;
+				middle_to_end = end;
 			}
-			root_erasing(*middle);
+			std::cout << (*middle_to_end).first << std::endl;
+			iterator middle_to_beg = middle_to_end;
+			root_erasing(middle_to_beg.base());
+			while (1) {
+				std::cout << "i = " << i - 1 << std::endl;
+				if (--i == 0) {
+					if (size_beg > size_end)
+						middle_to_end = last;
+					else
+						middle_to_beg = first;
+				}
+				std::cout << "BEFORE ADD " << (*middle_to_end).first << " / / / " << (*middle_to_beg).first << std::endl;
+				add(*(++middle_to_end));
+				add(*(--middle_to_beg));
+				std::cout << "AFTER ADD " << (*middle_to_end).first << " / / / " << (*middle_to_beg).first << std::endl;
+				std::cout << (*mem_end).first << std::endl;
+				if (middle_to_beg == mem_beg && middle_to_end == mem_end)
+					break ;
+				if (middle_to_beg == mem_beg) {
+					if (--i == 0)
+						add(*mem_end);
+					else
+						add(*(++middle_to_end));
+					break ;
+				}
+				else if (middle_to_end == mem_end) {
+					std::cout << "woop woop" << std::endl;
+					if (--i == 0)
+						add(*mem_beg);
+					else
+						add(*(--middle_to_beg));
+					break ;
+				}
+			}
+			suppress_BST(old_root);
 		}
 	};
 
@@ -412,6 +449,10 @@ namespace ft {
 
 		size_type erase (const key_type& k) {
 			return (_bst.erase(k));
+		}
+
+		void erase (iterator first, iterator last) {
+			return (_bst.erase(first, last));			
 		}
 
 		iterator begin() const {return _bst.begin();}
