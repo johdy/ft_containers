@@ -19,8 +19,11 @@ namespace ft {
     	node_alloc		_node_alloc;
     	Compare			_comp;
     	size_type		_size;
+		Node			*_end;
 
     	void	suppress_BST(Node *node_to_suppr) {
+			if (node_to_suppr == _end)
+				return ;
     		if (node_to_suppr->_left) {
     			suppress_BST(node_to_suppr->_left);
     		}
@@ -90,19 +93,28 @@ namespace ft {
     	~BST() {
     		if (_root)
     			suppress_BST(_root);
+			std::cout << _root << std::endl;
+    		_node_alloc.destroy(_end);
+			_node_alloc.deallocate(_end, 1);
+			std::cout << _end << std::endl;
     	}
 
     	void clear() {
-    		_size = 0;
     		if (_root)
     			suppress_BST(_root);
+			_node_alloc.destroy(_end);
+			_node_alloc.deallocate(_end, 1);
+			this->initialize();
     	}
 
     	void initialize(const key_compare comp = key_compare()) {
 			_node_alloc = node_alloc();
     		_root = alloc_new_node();
     		_comp = comp;
-    		_size = 0; 		
+    		_size = 0;
+			_end = alloc_new_node();
+			_root->_right = _end;
+			_end->_parent = _root;
     	}
 
 		iterator begin() const { 
@@ -113,10 +125,7 @@ namespace ft {
 		}
 
 		iterator end() const { 
-			Node *head = _root;
-			while (head->_right)
-				head = head->_right;
-			return (++iterator(head));
+			return (iterator(_end));
 		}
 
     	void display_recursif(Node *node_to_disp, int level) {
@@ -126,6 +135,8 @@ namespace ft {
     		if (node_to_disp->_right) {
     			display_recursif(node_to_disp->_right, level + 1);
     		}
+			if (node_to_disp == _end)
+				return ;
 			std::cout << "LEVEL : " << level << " ( " << node_to_disp <<" ) // " << node_to_disp->_value.first << " : " << node_to_disp->_value.second
 			<< " // LEFT : " << node_to_disp->_left << " // RIGHT : " << node_to_disp->_right << std::endl; 		
     	}
@@ -152,7 +163,7 @@ namespace ft {
     			 next = hint_it.base();
     		else
     			next = _root;
-    		while (next != NULL) {
+    		while (next != NULL && next != _end) {
     			parent = next;
     			if (_comp(pair.first, next->_value.first))
     				next = next->_left;
@@ -168,6 +179,10 @@ namespace ft {
 			else if (!_comp(pair.first, parent->_value.first))
 				parent->_right = new_node;
 			new_node->_parent = parent;
+			if (next == _end) {
+				new_node->_right = _end;
+				_end->_parent = new_node;
+			}
 			return (ft::pair<iterator,bool>(iterator(new_node), true));
 		}
 
@@ -245,6 +260,8 @@ namespace ft {
 			new_root->_value = val->_value;
 			_root = new_root;
 			_root->_parent = _root;
+			_root->_right = _end;
+			_end->_parent = _root;
 			return;
 		}
 
@@ -253,13 +270,12 @@ namespace ft {
 			Node *determine_range = suppr_node;
 
 			if (suppr_node == _root) {
-				std::cout << _size << std::endl;
-				if (_size == 1) {
-					clear();
-					return ;
-				}
 				iterator beg = begin();
 				iterator en = --end();
+				std::cout << this->end().base() << std::endl;
+				std::cout << this->end().base()->_parent << std::endl;
+				std::cout << en.base() << std::endl;
+				std::cout << position.base() << std::endl;
 				if (_root->_left != NULL)
 					root_erasing(_root->_left);
 				else if (_root->_right != NULL)
@@ -277,8 +293,14 @@ namespace ft {
 				determine_range = determine_range->_left;
 			iterator first(determine_range);
 			determine_range = suppr_node;
-			while (determine_range->_right)
+			while (determine_range->_right && determine_range->_right != _end)
 				determine_range = determine_range->_right;
+			if (determine_range->_right == _end) {
+				std::cout << "et pourtant " << suppr_node->_parent << std::endl;
+				suppr_node->_parent->_right = _end;
+				_end->_parent = suppr_node->_parent;
+				std::cout << "et pourtant " << _end->_parent << std::endl;
+			}
 			iterator last(determine_range);
 			this->add_range_except(first, last, position);
 			this->suppress_BST(suppr_node);
@@ -318,19 +340,14 @@ namespace ft {
 
 		void erase (iterator first, iterator last) {
 			iterator head = last;
-			key_type stop = first->first;
-			key_type find_last = last->first;
+			key_type stop_val = first->first;
 			while (1) {
-				std::cout << stop << std::endl;
-				if ((--head)->first == stop) 
+				if ((--head)->first == stop_val) 
 					break ;
-				else
-					std::cout << head->first << "//" << stop << std::endl;
 				std::cout << head->first << std::endl;
 
 				this->erase(head);
-				head = this->find(find_last);
-				this->display_tree();
+				head = last;
 			}
 			std::cout << "nonono" << std::endl;
 			this->erase(head);
@@ -364,7 +381,7 @@ namespace ft {
 			}
 			std::cout << lower_to_readd << "//" << greater_to_readd << std::endl;
 			if (lower_to_readd)
-				this->add_range(leftest_from(lower_to_readd), rightest_from(lower_to_readd));
+				this->add_range(leftest_from(lower_to_readd), rightet_from(lower_to_readd));
 			if (greater_to_readd)
 				this->add_range(leftest_from(greater_to_readd), rightest_from(greater_to_readd));
 			std::cout << "ok" << std::endl;
@@ -434,7 +451,6 @@ namespace ft {
 			_comp = x._comp;
 			_alloc = x._alloc;
 			_bst.clear();
-			_bst.initialize();
 			_bst.add_range(x.begin(), x.end());
 			return (*this);
 		}

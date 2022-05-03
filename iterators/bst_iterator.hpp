@@ -16,8 +16,6 @@ namespace ft {
 
 	private:
 		pointer _elem;
-		pointer _last_node;
-		pointer _first_node;
 
 		pointer leftest_from(pointer it) {
 			while (it->_left)
@@ -50,8 +48,6 @@ namespace ft {
 			if (*this == rhs)
 				return *this;
 			_elem = rhs.base();
-			_last_node = rhs._last_node;
-			_first_node = rhs._first_node;
 			return (*this);
 		}
 
@@ -61,27 +57,16 @@ namespace ft {
 		under_type& operator*() const { return _elem->_value; }
 
 		bst_iterator& operator++() {
-			if (_elem == NULL && _first_node) {
-				_elem = _first_node;
-				_last_node = NULL;
-			}
-			else if (_elem->_right)
+			if (_elem->_right)
 				_elem = leftest_from(_elem->_right);
 			else {
-				_last_node = _elem;
 				while (_elem->_parent) {
-					if (_elem->_parent == _elem->_parent->_parent && _elem->_parent->_left != _elem) {
-						_elem = NULL;
-						break ;
-					}
 					if (_elem == _elem->_parent) {
 						_elem = leftest_from(_elem);
-						_last_node = NULL;
 						break ;
 					}
 					if (_elem->_parent->_left == _elem) {
 						_elem = _elem->_parent;
-						_last_node = NULL;
 						break ; 
 					}
 					_elem = _elem->_parent;
@@ -97,27 +82,16 @@ namespace ft {
 		}
 
 		bst_iterator& operator--() {
-			if (_elem == NULL && _last_node) {
-				_elem = _last_node;
-				_last_node = NULL;
-			}
-			else if (_elem->_left)
+			if (_elem->_left)
 				_elem = rightest_from(_elem->_left);
 			else {
-				_first_node = _elem;
 				while (_elem->_parent) {
-					if (_elem->_parent == _elem->_parent->_parent && _elem->_parent->_right != _elem) {
-						_elem = NULL;
-						break ;
-					}
 					if (_elem == _elem->_parent) {
 						_elem = rightest_from(_elem);
-						_first_node = NULL;
 						break ;
 					}
 					if (_elem->_parent->_right == _elem) {
 						_elem = _elem->_parent;
-						_first_node = NULL;
 						break ;
 					}
 					_elem = _elem->_parent;

@@ -36,18 +36,26 @@ void test_ft_map_iterators(NAMESPACE::map<std::string, int> &test) {
 	test.display_tree();
 	test.erase((test.find("ee")));
 	test.display_tree();
-	//test.erase(++(test.begin()), --test.end());
+	test.erase(test.find("10"), test.end());
+	std::cout << test.begin().base() << test.end().base() << std::endl;
+	test.display_tree();
+	//test.erase("aa");
 	//test.erase((test.find("c")), test.end());
-	test.erase("b");
+	//test.display_tree();
+	//test.erase("f");
+	/*test.erase("ee");
 	test.display_tree();
-	//test.erase("ee");
 	test.erase("123");
+	test.display_tree();
 	test.erase("c");
+	test.display_tree();
 	test.erase("f");
-	test.display_tree();
-	test.erase("ee");
-	std::cout<< "ko"<< std::endl;
-	test.display_tree();
+	test.display_tree();*/
+	//test.erase("ee");
+	//std::cout<< "ko"<< std::endl;
+	//test.display_tree();
+	//test.erase("10");
+	//test.display_tree();
 
 }
 
@@ -58,7 +66,7 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	NAMESPACE::map<std::string, int> map3(map2.begin(),--map2.end());
 	std::cout << "CA DEVFRAIT ETRE f : " << (--(map2.end()))->first << std::endl;
 	map3.display_tree();
-	//map.display_tree();
+	map.display_tree();
 }
 
 int main() {
@@ -83,7 +91,6 @@ int main() {
 	map.insert(paire4);
 	map.insert(paire5);
 	map.insert(paire6);
-	//map.display_tree();
 	map["d"] = 17;
 	map["123"];
 	std::cout << "ohh " << map.lower_bound("f")->first << std::endl;
