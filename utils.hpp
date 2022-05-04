@@ -6,7 +6,7 @@ namespace ft {
 
 	template<class T>
 	struct node {
-		T _value;
+		T *_value;
 		node* _parent;
 		node* _left;
 		node* _right;

@@ -17,6 +17,7 @@ namespace ft {
     private:
     	Node			*_root;
     	node_alloc		_node_alloc;
+    	value_alloc		_value_alloc;
     	Compare			_comp;
     	size_type		_size;
 		Node			*_end;
@@ -31,6 +32,9 @@ namespace ft {
     			suppress_BST(node_to_suppr->_right);
     		}
     		--_size;
+		//	if (node_to_suppr->_value != NULL)
+    	//		_value_alloc.destroy(node_to_suppr->_value);
+			_value_alloc.deallocate(node_to_suppr->_value, 1);			
     		_node_alloc.destroy(node_to_suppr);
 			_node_alloc.deallocate(node_to_suppr, 1);
     	}
@@ -40,6 +44,7 @@ namespace ft {
 
     		new_node = _node_alloc.allocate(1);
     		_node_alloc.construct(new_node, Node());
+			new_node->_value = _value_alloc.allocate(1);
     		new_node->_parent = NULL;
     		new_node->_left = NULL;
     		new_node->_right = NULL;
@@ -94,6 +99,7 @@ namespace ft {
     		if (_root)
     			suppress_BST(_root);
 			std::cout << _root << std::endl;
+			_value_alloc.deallocate(_end->_value, 1);
     		_node_alloc.destroy(_end);
 			_node_alloc.deallocate(_end, 1);
 			std::cout << _end << std::endl;
@@ -102,6 +108,7 @@ namespace ft {
     	void clear() {
     		if (_root)
     			suppress_BST(_root);
+			_value_alloc.deallocate(_end->_value, 1);
 			_node_alloc.destroy(_end);
 			_node_alloc.deallocate(_end, 1);
 			this->initialize();
@@ -109,6 +116,7 @@ namespace ft {
 
     	void initialize(const key_compare comp = key_compare()) {
 			_node_alloc = node_alloc();
+			_value_alloc = value_alloc();
     		_root = alloc_new_node();
     		_comp = comp;
     		_size = 0;
@@ -117,7 +125,9 @@ namespace ft {
 			_end->_parent = _root;
     	}
 
-		iterator begin() const { 
+		iterator begin() const {
+			if (_size == 0)
+				return (iterator(_end));
 			Node *head = _root;
 			while (head->_left)
 				head = head->_left;
@@ -137,7 +147,7 @@ namespace ft {
     		}
 			if (node_to_disp == _end)
 				return ;
-			std::cout << "LEVEL : " << level << " ( " << node_to_disp <<" ) // " << node_to_disp->_value.first << " : " << node_to_disp->_value.second
+			std::cout << "LEVEL : " << level << " ( " << node_to_disp <<" ) // " << node_to_disp->_value->first << " : " << node_to_disp->_value->second
 			<< " // LEFT : " << node_to_disp->_left << " // RIGHT : " << node_to_disp->_right << std::endl; 		
     	}
 
@@ -151,7 +161,8 @@ namespace ft {
     	ft::pair<iterator,bool> add(const T& pair, bool hint = false, iterator hint_it = NULL) {
     		++_size;
     		if (_root->_parent == NULL) {
-    			_root->_value = pair;
+				_value_alloc.construct(_root->_value, pair);
+    			//_root->_value = pair;
     			_root->_parent = _root;
     			return (ft::pair<iterator,bool>(iterator(_root), true));
     		}
@@ -165,18 +176,18 @@ namespace ft {
     			next = _root;
     		while (next != NULL && next != _end) {
     			parent = next;
-    			if (_comp(pair.first, next->_value.first))
+    			if (_comp(pair.first, next->_value->first))
     				next = next->_left;
-    			else if (_comp(next->_value.first, pair.first))
+    			else if (_comp(next->_value->first, pair.first))
     				next = next->_right;
     			else
     				return (ft::pair<iterator,bool>(iterator(next), false));
     		}
      		Node *new_node = alloc_new_node();
-    		new_node->_value = pair;
-			if (_comp(pair.first, parent->_value.first))
+    		_value_alloc.construct(new_node->_value, pair);
+			if (_comp(pair.first, parent->_value->first))
 				parent->_left = new_node;
-			else if (!_comp(pair.first, parent->_value.first))
+			else if (!_comp(pair.first, parent->_value->first))
 				parent->_right = new_node;
 			new_node->_parent = parent;
 			if (next == _end) {
@@ -212,11 +223,11 @@ namespace ft {
 			iterator candidate = this->end();
 
 			while (head) {
-				if (!_comp(head->_value.first, k))
+				if (!_comp(head->_value->first, k))
 					candidate = head;
-				if (_comp(k, head->_value.first))
+				if (_comp(k, head->_value->first))
 					head = head->_left;
-				else if (_comp(head->_value.first, k))
+				else if (_comp(head->_value->first, k))
 					head = head->_right;
 				else
 					return (candidate);
@@ -229,9 +240,9 @@ namespace ft {
 			iterator candidate = this->end();
 
 			while (head) {
-				if (_comp(k, head->_value.first))
+				if (_comp(k, head->_value->first))
 					candidate = head;
-				if (_comp(k, head->_value.first))
+				if (_comp(k, head->_value->first))
 					head = head->_left;
 				else
 					head = head->_right;
@@ -244,9 +255,9 @@ namespace ft {
 			Node *head = _root;
 
 			while (head) {
-				if (_comp(head->_value.first, k))
+				if (_comp(head->_value->first, k))
 					head = head->_right;
-				else if (_comp(k, head->_value.first))
+				else if (_comp(k, head->_value->first))
 					head = head->_left;
 				else
 					return (iterator(head));
@@ -257,7 +268,7 @@ namespace ft {
 		void root_erasing(Node *val) {
 			Node *new_root = alloc_new_node();
 
-			new_root->_value = val->_value;
+			_value_alloc.construct(new_root->_value, *(val->_value));
 			_root = new_root;
 			_root->_parent = _root;
 			_root->_right = _end;
@@ -272,14 +283,14 @@ namespace ft {
 			if (suppr_node == _root) {
 				iterator beg = begin();
 				iterator en = --end();
-				std::cout << this->end().base() << std::endl;
-				std::cout << this->end().base()->_parent << std::endl;
-				std::cout << en.base() << std::endl;
-				std::cout << position.base() << std::endl;
 				if (_root->_left != NULL)
 					root_erasing(_root->_left);
-				else if (_root->_right != NULL)
+				else if (_root->_right != NULL && _root->_right != _end)
 					root_erasing(_root->_right);
+				else {
+					this->clear();
+					return ;
+				}
 				this->add_range_except(beg, en, position);
 				this->suppress_BST(suppr_node);
 				return;
@@ -296,10 +307,8 @@ namespace ft {
 			while (determine_range->_right && determine_range->_right != _end)
 				determine_range = determine_range->_right;
 			if (determine_range->_right == _end) {
-				std::cout << "et pourtant " << suppr_node->_parent << std::endl;
 				suppr_node->_parent->_right = _end;
 				_end->_parent = suppr_node->_parent;
-				std::cout << "et pourtant " << _end->_parent << std::endl;
 			}
 			iterator last(determine_range);
 			this->add_range_except(first, last, position);
@@ -316,28 +325,6 @@ namespace ft {
 			return (1);
 		}
 
-		iterator leftest_from(Node *nd) {
-			std::cout << "oy" << std::endl;
-			while (nd->_left)
-				nd = nd->_left;
-			return (nd);
-		}
-
-		iterator rightest_from(Node *nd) {
-			while (nd->_right)
-				nd = nd->_right;
-			return (nd);
-		}
-
-		bool is_parent(Node *nd, Node *parent_candidate) {
-			while (nd->_parent != nd) {
-				if (nd == parent_candidate)
-					return (true);
-				nd = nd->_parent;;
-			}
-			return (false);
-		}
-
 		void erase (iterator first, iterator last) {
 			iterator head = last;
 			key_type stop_val = first->first;
@@ -352,45 +339,6 @@ namespace ft {
 			std::cout << "nonono" << std::endl;
 			this->erase(head);
 		}
-		/*void erase (iterator first, iterator last) {
-			Node *lower_to_readd = first.base()->_left;
-			Node *greater_to_readd = (--last).base()->_right;
-			Node *greatest_parent = first.base();
-			Node *greatest_parent_mem = greatest_parent;
-			Node *greatest_parent_it = greatest_parent_mem;
-
-			while (first != last) {
-				std::cout << first->first << std::endl;
-				while (is_parent(first.base(), greatest_parent) && first != last) {
-					++first;
-				}
-				if (greatest_parent->_parent->_left == greatest_parent)
-					greatest_parent->_parent->_left = NULL;
-				else
-					greatest_parent->_parent->_right = NULL;
-				greatest_parent->_parent = NULL;
-				if (greatest_parent != greatest_parent_mem) {
-					std::cout << "im " << greatest_parent_it->_parent << std::endl;
-					greatest_parent_it = greatest_parent_mem;
-					while (greatest_parent_it->_parent) {
-						greatest_parent_it = greatest_parent_it->_parent;
-					}
-					greatest_parent_it->_parent = greatest_parent;
-				}
-				greatest_parent = first.base();
-			}
-			std::cout << lower_to_readd << "//" << greater_to_readd << std::endl;
-			if (lower_to_readd)
-				this->add_range(leftest_from(lower_to_readd), rightet_from(lower_to_readd));
-			if (greater_to_readd)
-				this->add_range(leftest_from(greater_to_readd), rightest_from(greater_to_readd));
-			std::cout << "ok" << std::endl;
-			while (greatest_parent_mem) {
-				greatest_parent_it = greatest_parent_mem->_parent;
-				this->suppress_BST(greatest_parent_mem);
-				greatest_parent_mem = greatest_parent_it;
-			}
-		}*/
 	};
 
 	template< class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<pair<const Key,T> > >
@@ -408,6 +356,9 @@ namespace ft {
 			value_compare(Compare comp) : _comp(comp) {};
 
 		public:
+			typedef bool result_type;
+			typedef value_type first_argument_type;
+			typedef value_type second_argument_type;
 			bool operator() (const value_type& x, const value_type& y) const {
 				return (_comp(x.first, y.first));
 			}
@@ -504,6 +455,20 @@ namespace ft {
 			_bst.display_tree();
 		}
 
+		void swap (map& x) {
+			key_compare							tmp_comp = _comp;
+			allocator_type						tmp_alloc = _alloc;
+			ft::BST<value_type, key_compare>	tmp_bst = _bst;
+
+			_bst = x._bst;
+			_alloc = x._alloc;
+			_comp = x._comp;
+
+			x._bst = tmp_bst;
+			x._alloc = tmp_alloc;
+			x._comp = tmp_comp;
+		}
+
 		iterator find (const key_type& k) { return (_bst.find(k)); }
 
 		size_type count (const key_type& k) const { return ((_bst.find(k) != this->end())); }
@@ -512,7 +477,22 @@ namespace ft {
 
 		iterator upper_bound (const key_type& k) { return (_bst.upper_bound(k)); }
 
+		key_compare key_comp() const { return (_comp) ; }
+
+		value_compare value_comp() const { return (value_compare()); }
+
 		ft::pair<iterator,iterator> equal_range (const key_type& k) {
+			iterator it = _bst.find(k);
+			iterator end = _bst.end();
+			if (it == end) {
+				it = _bst.upper_bound(k);
+				return (ft::pair<iterator,iterator>(it, it));
+			}
+			iterator itplus = it;
+			return (ft::pair<iterator,iterator>(it, ++itplus));
+		}
+
+		ft::pair< const iterator, const iterator> equal_range (const key_type& k) const {
 			iterator it = _bst.find(k);
 			iterator end = _bst.end();
 			if (it == end) {

@@ -51,10 +51,10 @@ namespace ft {
 			return (*this);
 		}
 
-		under_type* operator->() { return &(_elem->_value); }
+		under_type* operator->() { return _elem->_value; }
 
 		pointer base() const { return (_elem); }
-		under_type& operator*() const { return _elem->_value; }
+		under_type& operator*() const { return *(_elem->_value); }
 
 		bst_iterator& operator++() {
 			if (_elem->_right)
@@ -62,7 +62,7 @@ namespace ft {
 			else {
 				while (_elem->_parent) {
 					if (_elem == _elem->_parent) {
-						_elem = leftest_from(_elem);
+						_elem = NULL;
 						break ;
 					}
 					if (_elem->_parent->_left == _elem) {
@@ -87,7 +87,7 @@ namespace ft {
 			else {
 				while (_elem->_parent) {
 					if (_elem == _elem->_parent) {
-						_elem = rightest_from(_elem);
+						_elem = NULL;
 						break ;
 					}
 					if (_elem->_parent->_right == _elem) {
