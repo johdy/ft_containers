@@ -53,37 +53,64 @@ namespace ft {
 
 		void	add_range_except(iterator first, iterator last_included, iterator avoid) {
     		iterator middle = first;
-    		size_t size = 0;
+    		iterator to_suppr = first++;
+    		/*size_t size = 0;
 
-			std::cout << first->first << "+" << last_included->first << std::endl;
-    		while (middle != last_included) {
+   			while (middle != last_included) {
     			++size;
     			++middle;
     		}
     		if (size == 0)
     			return ;
     		size = size / 2 + 1;
-			std::cout << size << std::endl;
     		while (--size)
     			--middle;
     		if (middle != avoid)
-    			this->add(*middle);
+    			this->re_add(middle.base());
+    		iterator middle2 = middle;
     		iterator it = middle;
-			std::cout << it->first << "-" << middle->first << std::endl;
-	  		while (it-- != first) {
+    		iterator it2 = ++middle2;
+  			std::cout << size << std::endl;
+	  		while (it != first && it2 != last_included) {
     			if (it != avoid)
-    				this->add(*it);
+    				this->re_add(it.base());
+    			if (it2 != avoid)
+    				this->re_add(it2.base());
+    			it = middle--;
+    			it2 = middle2++;
+    			it.base()->_left = NULL;
+    			it.base()->_right = NULL;
+    			it2.base()->_left = NULL;
+    			it2.base()->_right = NULL;
+    			std::cout << it->first << "/" << first->first << it2->first << last_included->first << std::endl;
     		}
 	   		it = middle;
+	   		iterator 
     		while (it++ != last_included) {
     			if (it != avoid)
-    				this->add(*it);
+    				this->re_add(*it);
     		}
+    		*/
+    		std::cout << last_included->first << std::endl;
+    		while (to_suppr != last_included && to_suppr.base() != _end) {
+    			std::cout << to_suppr->first << std::endl;
+    			to_suppr.base()->_left = NULL;
+    			to_suppr.base()->_right = NULL;
+    			if (to_suppr != avoid)
+    				re_add(to_suppr.base());
+    			std::cout << to_suppr->first << std::endl;
+    			to_suppr = first++;
+	 		}
+			//std::cout << to_suppr->first << std::endl;
+			to_suppr.base()->_left = NULL;
+			to_suppr.base()->_right = NULL;
+			if (to_suppr != avoid)
+				re_add(to_suppr.base());
 		}
 
 	public:
 
-    	BST() {
+		BST() {
     		this->initialize();
     	}
 
@@ -98,11 +125,9 @@ namespace ft {
     	~BST() {
     		if (_root)
     			suppress_BST(_root);
-			std::cout << _root << std::endl;
 			_value_alloc.deallocate(_end->_value, 1);
     		_node_alloc.destroy(_end);
 			_node_alloc.deallocate(_end, 1);
-			std::cout << _end << std::endl;
     	}
 
     	void clear() {
@@ -138,25 +163,61 @@ namespace ft {
 			return (iterator(_end));
 		}
 
-    	void display_recursif(Node *node_to_disp, int level) {
+    	void display_recursif(Node *node_to_disp, int level, bool debug) {
     		if (node_to_disp->_left) {
-    			display_recursif(node_to_disp->_left, level + 1);
+    			display_recursif(node_to_disp->_left, level + 1, debug);
     		}
     		if (node_to_disp->_right) {
-    			display_recursif(node_to_disp->_right, level + 1);
+    			display_recursif(node_to_disp->_right, level + 1, debug);
     		}
 			if (node_to_disp == _end)
 				return ;
-			std::cout << "LEVEL : " << level << " ( " << node_to_disp <<" ) // " << node_to_disp->_value->first << " : " << node_to_disp->_value->second
-			<< " // LEFT : " << node_to_disp->_left << " // RIGHT : " << node_to_disp->_right << std::endl; 		
+			if (debug) {
+				std::cout << "LEVEL : " << level << " ( " << node_to_disp <<" ) // " << node_to_disp->_value->first << " : " << node_to_disp->_value->second
+				<< " // LEFT : " << node_to_disp->_left << " // RIGHT : " << node_to_disp->_right << std::endl;
+			}
+			else {
+				std::cout << "(" << level << ")" << node_to_disp->_value->first << ":" << node_to_disp->_value->second << ";";
+				if (node_to_disp == _root)
+					std::cout << std::endl;
+			}
     	}
 
-    	void display_tree() {
+    	void display_tree(bool debug) {
     		std::cout << "tree size : " << _size << std::endl;
-    		display_recursif(_root, 0);
+    		display_recursif(_root, 0, debug);
     	}
 
-    	size_type	size() {return _size;}
+    	size_type	size() const {return _size;}
+
+    	ft::pair<iterator,bool> re_add(Node *node, bool hint = false, iterator hint_it = NULL) {
+    		Node *next;
+    		Node *parent;
+
+    		if (hint)
+    			 next = hint_it.base();
+    		else
+    			next = _root;
+    		while (next != NULL && next != _end) {
+    			parent = next;
+    			if (_comp(node->_value->first, next->_value->first))
+    				next = next->_left;
+    			else if (_comp(next->_value->first, node->_value->first))
+    				next = next->_right;
+    			else
+    				return (ft::pair<iterator,bool>(iterator(next), false));
+    		}
+			if (_comp(node->_value->first, parent->_value->first))
+				parent->_left = node;
+			else if (!_comp(node->_value->first, parent->_value->first))
+				parent->_right = node;
+			node->_parent = parent;
+			if (next == _end) {
+				node->_right = _end;
+				_end->_parent = node;
+			}
+			return (ft::pair<iterator,bool>(iterator(node), true));
+		}
 
     	ft::pair<iterator,bool> add(const T& pair, bool hint = false, iterator hint_it = NULL) {
     		++_size;
@@ -254,7 +315,7 @@ namespace ft {
 		iterator find (const key_type& k) const {
 			Node *head = _root;
 
-			while (head) {
+			while (head && head != _end) {
 				if (_comp(head->_value->first, k))
 					head = head->_right;
 				else if (_comp(k, head->_value->first))
@@ -266,10 +327,7 @@ namespace ft {
 		}
 
 		void root_erasing(Node *val) {
-			Node *new_root = alloc_new_node();
-
-			_value_alloc.construct(new_root->_value, *(val->_value));
-			_root = new_root;
+			_root = val;
 			_root->_parent = _root;
 			_root->_right = _end;
 			_end->_parent = _root;
@@ -280,6 +338,8 @@ namespace ft {
 			Node *suppr_node = position.base();
 			Node *determine_range = suppr_node;
 
+			--_size;
+			display_tree(true);
 			if (suppr_node == _root) {
 				iterator beg = begin();
 				iterator en = --end();
@@ -291,8 +351,11 @@ namespace ft {
 					this->clear();
 					return ;
 				}
+				std::cout << "new_root:" << _root->_value->first << std::endl;
 				this->add_range_except(beg, en, position);
-				this->suppress_BST(suppr_node);
+				//this->suppress_BST(suppr_node);
+				std::cout << "ERASE ROOT" << std::endl;
+				display_tree(true);
 				return;
 			}
 			if (suppr_node->_parent->_left == suppr_node)
@@ -312,8 +375,81 @@ namespace ft {
 			}
 			iterator last(determine_range);
 			this->add_range_except(first, last, position);
-			this->suppress_BST(suppr_node);
+			_value_alloc.destroy(suppr_node->_value);
+			_value_alloc.deallocate(suppr_node->_value, 1);
+			_node_alloc.destroy(suppr_node);
+			_node_alloc.deallocate(suppr_node, 1);
+			//this->suppress_BST(suppr_node);
 		}
+
+		void destroy_node(Node *suppr_node) {
+			_value_alloc.destroy(suppr_node->_value);
+			_value_alloc.deallocate(suppr_node->_value, 1);
+			_node_alloc.destroy(suppr_node);
+			_node_alloc.deallocate(suppr_node, 1);			
+		}
+
+		iterator sew_remaining_nodes(iterator position) {
+			Node *leftest_from_right;
+
+			leftest_from_right = position.base()->_right;
+			while (leftest_from_right && leftest_from_right->_left)
+				leftest_from_right = leftest_from_right->_left;
+			if (!leftest_from_right)
+				position.base()->_right = position.base()->_left;
+			else
+				leftest_from_right->_left = position.base()->_left;
+
+			Node *last_node = position.base()->_right;
+			while (last_node->_right && last_node->_right != _end)
+				last_node = last_node->_right;
+			last_node->_right = _end;
+
+			while (leftest_from_right->_left)
+				leftest_from_right = leftest_from_right->_left;
+			return (iterator(leftest_from_right));
+		}
+
+		void erase(iterator position) {
+			Node *suppr_node = position.base();
+			Node *determine_range = suppr_node;
+
+			--_size;
+			display_tree(true);
+			if (suppr_node == _root) {
+				iterator beg = begin();
+				iterator en = --end();
+				if (_root->_left != NULL)
+					root_erasing(_root->_left);
+				else if (_root->_right != NULL && _root->_right != _end)
+					root_erasing(_root->_right);
+				else {
+					this->clear();
+					return ;
+				}
+				std::cout << "new_root:" << _root->_value->first << std::endl;
+				this->add_range_except(beg, en, position);
+				//this->suppress_BST(suppr_node);
+				std::cout << "ERASE ROOT" << std::endl;
+				display_tree(true);
+				return;
+			}
+			//COUD
+			iterator first_to_readd = sew_remaining_nodes(position);
+
+			//COUPE
+			if (suppr_node->_parent->_left == suppr_node)
+				suppr_node->_parent->_left = NULL;
+			else
+				suppr_node->_parent->_right = NULL;
+			destroy_node(suppr_node);
+
+			//REINJECTE
+			readd_range(first_to_readd);
+
+			//this->suppress_BST(suppr_node);
+		}
+
 
 		size_type erase (const key_type& k) {
 			iterator locate = this->find(k);
@@ -328,15 +464,14 @@ namespace ft {
 		void erase (iterator first, iterator last) {
 			iterator head = last;
 			key_type stop_val = first->first;
+			std::cout << "heo" << std::endl;
 			while (1) {
 				if ((--head)->first == stop_val) 
 					break ;
 				std::cout << head->first << std::endl;
-
 				this->erase(head);
 				head = last;
 			}
-			std::cout << "nonono" << std::endl;
 			this->erase(head);
 		}
 	};
@@ -420,7 +555,7 @@ namespace ft {
 
 		template <class InputIterator>
  		void insert (InputIterator first, InputIterator last) {
- 			_bst.add(first, last);
+ 			_bst.add_range(first, last);
   		}
 
 		void erase (iterator position) {
@@ -451,8 +586,8 @@ namespace ft {
 		}
 
 
-		void display_tree() {
-			_bst.display_tree();
+		void display_tree(bool debug = false) {
+			_bst.display_tree(debug);
 		}
 
 		void swap (map& x) {

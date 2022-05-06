@@ -1,0 +1,103 @@
+----------- début tests test_ft_map_constructeur + modifiers et element access -----------
+-----> insert de paires ee, b, d, f, aa, c
+-----MAP map1 of SIZE = 6-----
+aa : 45
+b : 7
+c : 18
+d : 7
+ee : 7
+f : 7
+-----> accessor[], modification de la valeur de d, de 123, de grp puis de 123
+-----MAP map1 of SIZE = 6-----
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+-----MAP map1 of SIZE = 7-----
+123 : 0
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+-----MAP map1 of SIZE = 8-----
+123 : 0
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+-----MAP map1 of SIZE = 8-----
+123 : -13
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+-----> constructeur par copie de map2
+-----MAP map2 of SIZE = 8-----
+123 : -13
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+-----> erase par key de d, j et 123
+-----MAP map2 of SIZE = 6-----
+aa : 45
+b : 7
+c : 18
+ee : 7
+f : 7
+grp : 777
+-----MAP map1 of SIZE = 8-----
+123 : -13
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+-----> constructeur par range de map3 map2.begin() a map2.end()
+-----MAP map3 of SIZE = 6-----
+aa : 45
+b : 7
+c : 18
+ee : 7
+f : 7
+grp : 777
+-----> erase de range de map 3 begin to end, puis insert de range de map 1 dans map 3 begin to --end
+-----MAP map3 of SIZE = 7-----
+123 : -13
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+-----> erase de map3 jsq --end par l'incrementation d'un iterateur (root compris)
+-----MAP map3 of SIZE = 1-----
+f : 7
+-----> insert dans map3 de (aa:45) deux fois et check bool retour
+1
+0
+-----> insert dans map3 de (c:18) et retention iterateur retour
+c
+-----MAP map3 of SIZE = 3-----
+aa : 45
+c : 18
+f : 7
+-----> erase de map1 jsq --end par range (root compris)
+-----MAP map1 of SIZE = 1-----
+grp : 777
+418 microsecondes
