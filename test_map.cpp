@@ -114,7 +114,7 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	//map2.erase("ee");
 	//map2.erase("123");
 	map2.display_tree(true);
-	map2.erase("aa");
+	//map2.erase("aa");
 	map2.display_tree(true);
 	//map2.erase("bef");
 	//map2.erase("d");

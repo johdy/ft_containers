@@ -172,7 +172,7 @@ namespace ft {
 			}
 			if (debug) {
 				std::cout << "LEVEL : " << level << " ( " << node_to_disp <<" ) // " << node_to_disp->_value->first << " : " << node_to_disp->_value->second
-				<< " // LEFT : " << node_to_disp->_left << " // RIGHT : " << node_to_disp->_right <<  " // PARENT : " << node_to_disp->_parent << std::endl;
+				<< " // LEFT : " << node_to_disp->_left << " // RIGHT : " << node_to_disp->_right << " // black : " << node_to_disp->_black <<  " // PARENT : " << node_to_disp->_parent << std::endl;
 			}
 			else {
 				std::cout << "(" << level << ")" << node_to_disp->_value->first << ":" << node_to_disp->_value->second << ";";
@@ -187,6 +187,43 @@ namespace ft {
     	}
 
     	size_type	size() const {return _size;}
+
+		void replace_node(Node *old, Node *new_n) {
+		    if (old->_parent == NULL) {
+		        _root = new_n;
+		    }
+		    else {
+		        if (old == old->_parent->_left)
+		            old->_parent->_left = new_n;
+		        else
+		            old->_parent->_right = new_n;
+		    }
+		    if (new_n != NULL) {
+		        new_n->_parent = old->_parent;
+		    }
+		}
+
+		void rotate_left(Node *to_rot) {
+		    Node *right = to_rot->_right;
+		    replace_node(to_rot, right);
+		    to_rot->_right = right->_left;
+		    if (right->_left != NULL) {
+		        right->_left->_parent = to_rot;
+		    }
+		    right->_left = to_rot;
+		    to_rot->_parent = right;
+		}
+
+		void rotate_right(Node *to_rot) {
+		    Node *left = to_rot->_left;
+		    replace_node(to_rot, left);
+		    to_rot->_left = left->_right;
+		    if (left->_right != NULL) {
+		        left->_right->_parent = to_rot;
+		    }
+		    left->_right = to_rot;
+		    to_rot->_parent = left;
+		}
 
     	void re_add(Node *node) {
     		Node *next;
@@ -215,12 +252,77 @@ namespace ft {
 			}
 		}
 
+		bool is_node_black(Node *node, bool black) {
+			if (!node)
+				return (!black);
+			return (black == node->_black);
+		}
+
+		Node *grand_parent(Node *node) {
+			if (node->_parent == NULL)
+				return (NULL);
+			return (node->_parent->_parent);			
+		}
+
+		Node *oncle(Node *node) {
+			if (!grand_parent(node))
+				return (NULL);
+			if (node->_parent == node->_parent->_parent->_left)
+				return (node->_parent->_parent->_right);
+			else
+				return (node->_parent->_parent->_left);
+		}
+
+		void insert_case_1(Node *new_node) {
+			if (new_node->_parent == NULL)
+				new_node->_black = true;
+			else
+				insert_case_2(new_node);
+		}
+
+		void insert_case_2(Node *new_node) {
+			if (!new_node->_parent->_black)
+				insert_case_3(new_node);
+		}
+
+		void insert_case_3(Node *new_node) {
+			if (is_node_black(oncle(new_node), false)) {
+				oncle(new_node)->_black = true;
+				new_node->_parent->_black = true;
+				grand_parent(new_node)->_black = false;
+				insert_case_1(grand_parent(new_node));
+			}
+			else
+				insert_case_4(new_node);
+		}
+
+		void insert_case_4(Node *new_node) {
+		    if (new_node == new_node->_parent->_right && new_node->_parent == grand_parent(new_node)->_left) {
+		        rotate_left(new_node->_parent);
+		        new_node = new_node->_left;
+		    }
+		    else if (new_node == new_node->_parent->_left && new_node->_parent == grand_parent(new_node)->_right) {
+		        rotate_right(new_node->_parent);
+		        new_node = new_node->_right;
+		    }
+		    insert_case_5(new_node);
+		}
+
+		void insert_case_5(Node *new_node) {
+			new_node->_parent->_black = true;
+			grand_parent(new_node)->_black = false;
+			if (new_node == new_node->_parent->_left && new_node->_parent == grand_parent(new_node)->_left)
+				rotate_right(grand_parent(new_node));
+			else if (new_node == new_node->_parent->_right && new_node->_parent == grand_parent(new_node)->_right)
+				rotate_left(grand_parent(new_node));
+		}
+
+
     	ft::pair<iterator,bool> add(const T& pair, bool hint = false, iterator hint_it = NULL) {
     		++_size;
-    		if (_root->_parent == NULL) {
+    		if (_size == 1) {
 				_value_alloc.construct(_root->_value, pair);
-    			//_root->_value = pair;
-    			_root->_parent = _root;
+				insert_case_1(_root);
     			return (ft::pair<iterator,bool>(iterator(_root), true));
     		}
 
@@ -242,6 +344,7 @@ namespace ft {
     		}
      		Node *new_node = alloc_new_node();
     		_value_alloc.construct(new_node->_value, pair);
+    		new_node->_black = false;
 			if (_comp(pair.first, parent->_value->first))
 				parent->_left = new_node;
 			else if (!_comp(pair.first, parent->_value->first))
@@ -251,6 +354,7 @@ namespace ft {
 				new_node->_right = _end;
 				_end->_parent = new_node;
 			}
+			insert_case_1(new_node);
 			return (ft::pair<iterator,bool>(iterator(new_node), true));
 		}
 
@@ -330,163 +434,12 @@ namespace ft {
 			return;
 		}
 
-		/*void erase(iterator position) {
-			Node *suppr_node = position.base();
-			Node *determine_range = suppr_node;
-
-			--_size;
-			display_tree(true);
-			if (suppr_node == _root) {
-				iterator beg = begin();
-				iterator en = --end();
-				if (_root->_left != NULL)
-					root_erasing(_root->_left);
-				else if (_root->_right != NULL && _root->_right != _end)
-					root_erasing(_root->_right);
-				else {
-					this->clear();
-					return ;
-				}
-				std::cout << "new_root:" << _root->_value->first << std::endl;
-				this->add_range_except(beg, en, position);
-				//this->suppress_BST(suppr_node);
-				std::cout << "ERASE ROOT" << std::endl;
-				display_tree(true);
-				return;
-			}
-			if (suppr_node->_parent->_left == suppr_node)
-				suppr_node->_parent->_left = NULL;
-			else
-				suppr_node->_parent->_right = NULL;
-
-			while (determine_range->_left)
-				determine_range = determine_range->_left;
-			iterator first(determine_range);
-			determine_range = suppr_node;
-			while (determine_range->_right && determine_range->_right != _end)
-				determine_range = determine_range->_right;
-			if (determine_range->_right == _end) {
-				suppr_node->_parent->_right = _end;
-				_end->_parent = suppr_node->_parent;
-			}
-			iterator last(determine_range);
-			this->add_range_except(first, last, position);
-			_value_alloc.destroy(suppr_node->_value);
-			_value_alloc.deallocate(suppr_node->_value, 1);
-			_node_alloc.destroy(suppr_node);
-			_node_alloc.deallocate(suppr_node, 1);
-			//this->suppress_BST(suppr_node);
-		}*/
-
 		void destroy_node(Node *suppr_node) {
 			_value_alloc.destroy(suppr_node->_value);
 			_value_alloc.deallocate(suppr_node->_value, 1);
 			_node_alloc.destroy(suppr_node);
 			_node_alloc.deallocate(suppr_node, 1);			
 		}
-
-		iterator sew_remaining_nodes(iterator position) {
-			Node *leftest_from_right;
-
-			leftest_from_right = position.base()->_right;
-			while (leftest_from_right && leftest_from_right->_left)
-				leftest_from_right = leftest_from_right->_left;
-			if (!leftest_from_right)
-				position.base()->_right = position.base()->_left;
-			else if (position.base()->_left) {
-				leftest_from_right->_left = position.base()->_left;
-				position.base()->_left->_parent = leftest_from_right;
-			}
-			std::cout << "ogod " << std::endl;
-			display_recursif(position.base(), 0 , true);
-			Node *last_node = position.base();
-			while (last_node->_right)
-				last_node = last_node->_right;
-			last_node->_right = _end;
-			leftest_from_right = position.base()->_right;
-			while (leftest_from_right->_left)
-				leftest_from_right = leftest_from_right->_left;
-			std::cout << leftest_from_right << std::endl;
-			return (iterator(leftest_from_right));
-		}
-
-		void readd_range(iterator first) {
-    		iterator count = first;
-    		iterator end = this->end();
-    		iterator middle_up = count;
-
-    		size_t size = 0;
-
-    		while (count != end) {
-    			middle_up = count;
-    			++size;
-    			++count;
-    		}
-    		if (size == 0)
-    			return ;
-    		size = size / 2;
-    		while (size--)
-    			--middle_up;
-    		iterator middle_down = middle_up++;
-    		iterator middle_down_tmp;
-    		iterator middle_up_tmp;
-    		while (middle_up != end) {
-    			display_recursif(first.base(), 0, true);
-    			middle_up_tmp = middle_up++;
-    			middle_down_tmp = middle_down;
-    			if (middle_down != first) {
-    				--middle_down;
-    				std::cout << "lao ui et " << middle_down->first << std::endl;
-    			}
-    			std::cout << "wowo " << middle_down_tmp->first << std::endl;
-    			std::cout << "wowo 2 " << middle_up_tmp->first << std::endl;
-    			re_add(middle_down_tmp.base());
-    			re_add(middle_up_tmp.base());
-    		}
-    		if (middle_down == first) {
-    			std::cout << "in in" << std::endl;
-    			re_add(first.base());
-    		}
-		}
-
-		void erase(iterator position) {
-			Node *suppr_node = position.base();
-			Node *determine_range = suppr_node;
-			iterator first_to_readd;
-
-			if (_size == 1) {
-				clear();
-				return ;
-			}
-			--_size;
-			if (suppr_node == _root) {
-				first_to_readd = sew_remaining_nodes(position);
-				_root = _root->_right;
-				_root->_parent = _root;
-				_end->_right = NULL;
-				destroy_node(suppr_node);
-				readd_range(first_to_readd);
-				return ;
-			}
-			//COUD
-			first_to_readd = sew_remaining_nodes(position);
-			//COUPE
-			if (suppr_node->_parent->_left == suppr_node)
-				suppr_node->_parent->_left = NULL;
-			else if (_end->_right == _end) {
-				suppr_node->_parent->_right = _end;
-				_end->_right = NULL;
-			}
-			else
-				suppr_node->_parent->_right = NULL;
-			destroy_node(suppr_node);
-			display_recursif(first_to_readd.base(), 0, true);
-			//REINJECTE
-			readd_range(first_to_readd);
-
-			//this->suppress_BST(suppr_node);
-		}
-
 
 		size_type erase (const key_type& k) {
 			iterator locate = this->find(k);

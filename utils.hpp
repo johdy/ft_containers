@@ -10,6 +10,7 @@ namespace ft {
 		node* _parent;
 		node* _left;
 		node* _right;
+		bool _black;
 	};
 
 	template <class T>

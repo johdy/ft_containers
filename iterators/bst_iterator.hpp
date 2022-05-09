@@ -61,13 +61,13 @@ namespace ft {
 				_elem = leftest_from(_elem->_right);
 			else {
 				while (_elem->_parent) {
-					if (_elem == _elem->_parent) {
-						_elem = NULL;
-						break ;
-					}
 					if (_elem->_parent->_left == _elem) {
 						_elem = _elem->_parent;
 						break ; 
+					}
+					if (_elem->_parent == NULL) {
+						_elem = NULL;
+						break ;
 					}
 					_elem = _elem->_parent;
 				}
@@ -86,13 +86,12 @@ namespace ft {
 				_elem = rightest_from(_elem->_left);
 			else {
 				while (_elem->_parent) {
-					std::cout << "elem parcours " << _elem->_value->first << std::endl;
-					if (_elem == _elem->_parent) {
-						_elem = NULL;
-						break ;
-					}
 					if (_elem->_parent->_right == _elem) {
 						_elem = _elem->_parent;
+						break ;
+					}
+					if (_elem->_parent == NULL) {
+						_elem = NULL;
 						break ;
 					}
 					_elem = _elem->_parent;
