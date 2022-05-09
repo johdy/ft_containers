@@ -86,6 +86,7 @@ namespace ft {
 				_elem = rightest_from(_elem->_left);
 			else {
 				while (_elem->_parent) {
+					std::cout << "elem parcours " << _elem->_value->first << std::endl;
 					if (_elem == _elem->_parent) {
 						_elem = NULL;
 						break ;
