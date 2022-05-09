@@ -358,6 +358,54 @@ namespace ft {
 			return (ft::pair<iterator,bool>(iterator(new_node), true));
 		}
 
+		void erase(iterator position) {
+			Node *suppr_node = position.base();
+			Node *determine_range = suppr_node;
+
+			--_size;
+			display_tree(true);
+			if (suppr_node == _root) {
+				iterator beg = begin();
+				iterator en = --end();
+				if (_root->_left != NULL)
+					root_erasing(_root->_left);
+				else if (_root->_right != NULL && _root->_right != _end)
+					root_erasing(_root->_right);
+				else {
+					this->clear();
+					return ;
+				}
+				std::cout << "new_root:" << _root->_value->first << std::endl;
+				this->add_range_except(beg, en, position);
+				//this->suppress_BST(suppr_node);
+				std::cout << "ERASE ROOT" << std::endl;
+				display_tree(true);
+				return;
+			}
+			if (suppr_node->_parent->_left == suppr_node)
+				suppr_node->_parent->_left = NULL;
+			else
+				suppr_node->_parent->_right = NULL;
+
+			while (determine_range->_left)
+				determine_range = determine_range->_left;
+			iterator first(determine_range);
+			determine_range = suppr_node;
+			while (determine_range->_right && determine_range->_right != _end)
+				determine_range = determine_range->_right;
+			if (determine_range->_right == _end) {
+				suppr_node->_parent->_right = _end;
+				_end->_parent = suppr_node->_parent;
+			}
+			iterator last(determine_range);
+			this->add_range_except(first, last, position);
+			_value_alloc.destroy(suppr_node->_value);
+			_value_alloc.deallocate(suppr_node->_value, 1);
+			_node_alloc.destroy(suppr_node);
+			_node_alloc.deallocate(suppr_node, 1);
+			//this->suppress_BST(suppr_node);
+		}
+		
 		template<class InputIterator>
 		void	add_range(InputIterator first, InputIterator last, InputIterator avoid = NULL) {
     		InputIterator middle = first;
