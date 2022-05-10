@@ -4,6 +4,20 @@
 
 namespace ft {
 
+	template<class Pointer>
+	Pointer leftest_from(Pointer it) {
+		while (it->_left)
+			it = it->_left;
+		return (it);
+	}
+
+	template<class Pointer>
+	Pointer rightest_from(Pointer it) {
+		while (it->_right)
+			it = it->_right;
+		return (it);
+	}
+
 	template<class T>
 	struct node {
 		T *_value;

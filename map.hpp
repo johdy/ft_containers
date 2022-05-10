@@ -31,9 +31,10 @@ namespace ft {
     		if (node_to_suppr->_right) {
     			suppress_BST(node_to_suppr->_right);
     		}
-    		--_size;
-			//if (node_to_suppr->_value != NULL)
-    		//	_value_alloc.destroy(node_to_suppr->_value);
+			if (_size != 0 && node_to_suppr->_value != NULL) {
+				--_size;
+    			_value_alloc.destroy(node_to_suppr->_value);
+			}
 			_value_alloc.deallocate(node_to_suppr->_value, 1);			
     		_node_alloc.destroy(node_to_suppr);
 			_node_alloc.deallocate(node_to_suppr, 1);
@@ -128,6 +129,7 @@ namespace ft {
     	}
 
     	void clear() {
+    		std::cout << _root << std::endl;
     		if (_root)
     			suppress_BST(_root);
 			_value_alloc.deallocate(_end->_value, 1);
@@ -145,6 +147,7 @@ namespace ft {
 			_end = alloc_new_node();
 			_root->_right = _end;
 			_end->_parent = _root;
+			_end->_black = true;
     	}
 
 		iterator begin() const {
@@ -252,10 +255,10 @@ namespace ft {
 			}
 		}
 
-		bool is_node_black(Node *node, bool black) {
+		bool is_node_black(Node *node) {
 			if (!node)
-				return (!black);
-			return (black == node->_black);
+				return (true);
+			return (node->_black);
 		}
 
 		Node *grand_parent(Node *node) {
@@ -274,23 +277,31 @@ namespace ft {
 		}
 
 		void insert_case_1(Node *new_node) {
-			if (new_node->_parent == NULL)
+			if (new_node->_parent == NULL) {
+				std::cout << "case1" << std::endl;
 				new_node->_black = true;
+			}
 			else
 				insert_case_2(new_node);
 		}
 
 		void insert_case_2(Node *new_node) {
-			if (!new_node->_parent->_black)
+			if (!new_node->_parent->_black) 
 				insert_case_3(new_node);
+			else
+				std::cout << "case2" << std::endl;
 		}
 
 		void insert_case_3(Node *new_node) {
-			if (is_node_black(oncle(new_node), false)) {
-				oncle(new_node)->_black = true;
+			if (!is_node_black(oncle(new_node))) {
+				std::cout << oncle(new_node) << std::endl;
+				if (oncle(new_node))
+					oncle(new_node)->_black = true;
 				new_node->_parent->_black = true;
-				grand_parent(new_node)->_black = false;
+				if (grand_parent(new_node))
+					grand_parent(new_node)->_black = false;
 				insert_case_1(grand_parent(new_node));
+				std::cout << "case3" << std::endl;
 			}
 			else
 				insert_case_4(new_node);
@@ -309,6 +320,7 @@ namespace ft {
 		}
 
 		void insert_case_5(Node *new_node) {
+			std::cout << "case5" << std::endl;
 			new_node->_parent->_black = true;
 			grand_parent(new_node)->_black = false;
 			if (new_node == new_node->_parent->_left && new_node->_parent == grand_parent(new_node)->_left)
@@ -358,73 +370,76 @@ namespace ft {
 			return (ft::pair<iterator,bool>(iterator(new_node), true));
 		}
 
-		void erase(iterator position) {
-			Node *suppr_node = position.base();
-			Node *determine_range = suppr_node;
+		void swap_node(Node *n1, Node *n2) {
+			Node *parent_tmp = n1->_parent;
+			Node *left_tmp = n1->_left;
+			Node *right_tmp = n1->_right;
 
-			--_size;
-			display_tree(true);
-			if (suppr_node == _root) {
-				iterator beg = begin();
-				iterator en = --end();
-				if (_root->_left != NULL)
-					root_erasing(_root->_left);
-				else if (_root->_right != NULL && _root->_right != _end)
-					root_erasing(_root->_right);
-				else {
-					this->clear();
-					return ;
-				}
-				std::cout << "new_root:" << _root->_value->first << std::endl;
-				this->add_range_except(beg, en, position);
-				//this->suppress_BST(suppr_node);
-				std::cout << "ERASE ROOT" << std::endl;
-				display_tree(true);
-				return;
-			}
-			if (suppr_node->_parent->_left == suppr_node)
-				suppr_node->_parent->_left = NULL;
+			if (n1->_parent->_left == n1)
+				n1->_parent->_left = n2;
 			else
-				suppr_node->_parent->_right = NULL;
+				n1->_parent->_right = n2;
+			if (n2->_parent->_left == n2)
+				n2->_parent->_left = n1;
+			else
+				n2->_parent->_right = n1;
 
-			while (determine_range->_left)
-				determine_range = determine_range->_left;
-			iterator first(determine_range);
-			determine_range = suppr_node;
-			while (determine_range->_right && determine_range->_right != _end)
-				determine_range = determine_range->_right;
-			if (determine_range->_right == _end) {
-				suppr_node->_parent->_right = _end;
-				_end->_parent = suppr_node->_parent;
+			n1->_parent = n2->_parent;
+			n1->_left = n2->_left;
+			n1->_right = n2->_right;
+
+			if (n1->_left == n1)
+				n1->_left = n2;
+			if (n1->_right == n1)
+				n1->_right = n2;
+			if (n1->_parent == n1)
+				n1->_parent = n2;
+
+			n2->_parent = parent_tmp;
+			n2->_left = left_tmp;
+			n2->_right = right_tmp;
+
+			if (n2->_left == n2)
+				n2->_left = n1;
+			if (n2->_right == n2)
+				n2->_right = n1;
+			if (n2->_parent == n2)
+				n2->_parent = n1;
+		}
+
+		void erase(iterator position) {
+			Node *to_suppr = position.base();
+
+			std::cout<< position->first << std::endl;
+			if (to_suppr->_left && to_suppr->_right) {
+				Node *replacement = rightest_from(to_suppr->_left);
+				Node *children = replacement->_left;
+				Node *replacement_tmp = replacement;
+				std::cout<<replacement << "?" << to_suppr << std::endl;
+				/*std::cout << "Node1_ to suppr : " << to_suppr << " // LEFT : " << to_suppr->_left << " // RIGHT : " << to_suppr->_right << " // PARENT : "
+				<< to_suppr->_parent << std::endl;
+				std::cout << "Node2_ replacement : " << replacement << " // LEFT : " << replacement->_left << " // RIGHT : " << replacement->_right << " // PARENT : "
+				<< replacement->_parent << std::endl;*/
+				swap_node(to_suppr, replacement);
+				/*std::cout << "Node1_ to suppr : " << to_suppr << " // LEFT : " << to_suppr->_left << " // RIGHT : " << to_suppr->_right << " // PARENT : "
+				<< to_suppr->_parent << std::endl;
+				std::cout << "Node2_ replacement : " << replacement << " // LEFT : " << replacement->_left << " // RIGHT : " << replacement->_right << " // PARENT : "
+				<< replacement->_parent << std::endl;*/
+				replacement->_black = to_suppr->_black;
+				std::cout << to_suppr->_left << std::endl;
+				display_tree(true);
+				//replacement->_left = to_suppr->_left;
+				//replacement->_right = to_suppr->_right;
+				//replace_node(replacement_tmp, to_suppr);
+				display_tree(true);
 			}
-			iterator last(determine_range);
-			this->add_range_except(first, last, position);
-			_value_alloc.destroy(suppr_node->_value);
-			_value_alloc.deallocate(suppr_node->_value, 1);
-			_node_alloc.destroy(suppr_node);
-			_node_alloc.deallocate(suppr_node, 1);
-			//this->suppress_BST(suppr_node);
 		}
 		
 		template<class InputIterator>
 		void	add_range(InputIterator first, InputIterator last, InputIterator avoid = NULL) {
-    		InputIterator middle = first;
-    		size_t size = 0;
-
-    		while (middle != last) {
-    			++size;
-    			++middle;
+    		while (first != last) {
+    			this->add(*(first++));
     		}
-    		size = size / 2 + 1;
-    		while (size--)
-    			--middle;
-    		this->add(*middle);
-    		InputIterator it = middle;
-    		while (it-- != first)
-    			this->add(*it);
-       		it = middle;
-    		while (++it != last)
-   				this->add(*it);
 		}
 
 		iterator lower_bound (const key_type& k) {
@@ -491,7 +506,7 @@ namespace ft {
 
 		size_type erase (const key_type& k) {
 			iterator locate = this->find(k);
-
+			std::cout << k << "//" << locate->first <<std::endl;
 			if (locate == this->end()) {
 				return (0);
 			}

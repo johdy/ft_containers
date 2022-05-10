@@ -84,15 +84,22 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	NAMESPACE::pair<std::string, int> paire6("c", 18);
 	std::cout << "-----> insert de paires ee, b, d, f, aa, c" <<std::endl;
 	map.insert(paire1);
+	map.display_tree(true);
 	map.insert(paire2);
+	map.display_tree(true);
 	map.insert(paire3);
+	map.display_tree(true);
 	map.insert(paire4);
+	map.display_tree(true);
 	map.insert(paire5);
+	map.display_tree(true);
 	map.insert(paire6);
 	int i = 0;
 	std::string a = "a";
-	while (++i < 10)
+	while (++i < 2) {
+		//map.display_tree(true);
 		map.insert(NAMESPACE::pair<std::string, int>(a.append(1, '.'), i));
+	}
 	display_tree_beg_to_end(map, "map1");
 	std::cout << "-----> accessor[], modification de la valeur de d, de 123, de grp puis de 123" <<std::endl;
 	map["d"] = 17;
@@ -103,28 +110,29 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	display_tree_beg_to_end(map, "map1");
 	map["123"] = -13;
 	display_tree_beg_to_end(map, "map1");
-
+	map.display_tree(true);
 	std::cout << "-----> constructeur par copie de map2" <<std::endl;
 	NAMESPACE::map<std::string, int> map2(map);
-	display_tree_beg_to_end(map2, "map2");
-	map2["bef"] = 1007;
+	//display_tree_beg_to_end(map2, "map2");
+	map2.display_tree(true);
+	//map2["bef"] = 1007;
 	std::cout << "-----> erase par key de d, j et 123" <<std::endl;
-	//map2.erase("c");
+	map2.erase("a.");
 	//map2.erase("j");
 	//map2.erase("ee");
 	//map2.erase("123");
-	map2.display_tree(true);
+	//map2.display_tree(true);
 	//map2.erase("aa");
-	map2.display_tree(true);
+	//map2.display_tree(true);
 	//map2.erase("bef");
 	//map2.erase("d");
 	//map2.erase("grp");
 	//map2.erase("b");
 	//map2.erase("f");
-	/*display_tree_beg_to_end(map2, "map2");
-	//map2.display_tree(true);
+	//display_tree_beg_to_end(map2, "map2");
+	//map.display_tree(true);
 	//map2.display_tree();
-	display_tree_beg_to_end(map2, "map2");
+	/*display_tree_beg_to_end(map2, "map2");
 	display_tree_beg_to_end(map, "map1");
 	std::cout << "-----> constructeur par range de map3 map2.begin() a map2.end()" <<std::endl;
 	NAMESPACE::map<std::string, int> map3(map2.begin(),map2.end());

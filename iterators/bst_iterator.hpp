@@ -17,18 +17,6 @@ namespace ft {
 	private:
 		pointer _elem;
 
-		pointer leftest_from(pointer it) {
-			while (it->_left)
-				it = it->_left;
-			return (it);
-		}
-
-		pointer rightest_from(pointer it) {
-			while (it->_right)
-				it = it->_right;
-			return (it);
-		}
-
 	public:
 		bst_iterator() : _elem(0) {
 		}
