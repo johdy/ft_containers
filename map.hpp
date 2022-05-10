@@ -374,20 +374,25 @@ namespace ft {
 			Node *parent_tmp = n1->_parent;
 			Node *left_tmp = n1->_left;
 			Node *right_tmp = n1->_right;
+			bool black_tmp = n1->_black;
 
-			if (n1->_parent->_left == n1)
+			if (n1->_parent && n1->_parent->_left == n1)
 				n1->_parent->_left = n2;
-			else
+			else if (n1->_parent)
 				n1->_parent->_right = n2;
-			if (n2->_parent->_left == n2)
-				n2->_parent->_left = n1;
 			else
+				_root = n2;
+			if (n2->_parent && n2->_parent->_left == n2)
+				n2->_parent->_left = n1;
+			else if (n2->_parent)
 				n2->_parent->_right = n1;
+			else
+				_root = n1;
 
 			n1->_parent = n2->_parent;
 			n1->_left = n2->_left;
 			n1->_right = n2->_right;
-
+			n1->_black = n2->_black;
 			if (n1->_left == n1)
 				n1->_left = n2;
 			if (n1->_right == n1)
@@ -398,7 +403,7 @@ namespace ft {
 			n2->_parent = parent_tmp;
 			n2->_left = left_tmp;
 			n2->_right = right_tmp;
-
+			n2->_black = black_tmp;
 			if (n2->_left == n2)
 				n2->_left = n1;
 			if (n2->_right == n2)
@@ -409,13 +414,11 @@ namespace ft {
 
 		void erase(iterator position) {
 			Node *to_suppr = position.base();
-
+			--_size;
 			std::cout<< position->first << std::endl;
 			if (to_suppr->_left && to_suppr->_right) {
 				Node *replacement = rightest_from(to_suppr->_left);
-				Node *children = replacement->_left;
-				Node *replacement_tmp = replacement;
-				std::cout<<replacement << "?" << to_suppr << std::endl;
+				std::cout<< to_suppr << std::endl;
 				/*std::cout << "Node1_ to suppr : " << to_suppr << " // LEFT : " << to_suppr->_left << " // RIGHT : " << to_suppr->_right << " // PARENT : "
 				<< to_suppr->_parent << std::endl;
 				std::cout << "Node2_ replacement : " << replacement << " // LEFT : " << replacement->_left << " // RIGHT : " << replacement->_right << " // PARENT : "
@@ -425,16 +428,31 @@ namespace ft {
 				<< to_suppr->_parent << std::endl;
 				std::cout << "Node2_ replacement : " << replacement << " // LEFT : " << replacement->_left << " // RIGHT : " << replacement->_right << " // PARENT : "
 				<< replacement->_parent << std::endl;*/
-				replacement->_black = to_suppr->_black;
-				std::cout << to_suppr->_left << std::endl;
-				display_tree(true);
+				std::cout<< to_suppr << std::endl;
 				//replacement->_left = to_suppr->_left;
 				//replacement->_right = to_suppr->_right;
 				//replace_node(replacement_tmp, to_suppr);
 				display_tree(true);
 			}
+			Node *children = to_suppr->_right ? to_suppr->_right : to_suppr->_left;
+			if (is_node_black(to_suppr)) {
+				to_suppr->_black = is_node_black(children);
+				delete_case_1(to_suppr);
+			}
+			replace_node(to_suppr, children);
+			if (!to_suppr->_parent && children)
+				children->_black = true;
+			destroy_node(to_suppr);
 		}
-		
+
+		void delete_case_1(Node *n) {
+			if (n->_parent)
+				delete_case_2(n);
+		}
+
+		void delete_case_2(Node *n) {
+		}
+
 		template<class InputIterator>
 		void	add_range(InputIterator first, InputIterator last, InputIterator avoid = NULL) {
     		while (first != last) {

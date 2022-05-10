@@ -117,7 +117,8 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	map2.display_tree(true);
 	//map2["bef"] = 1007;
 	std::cout << "-----> erase par key de d, j et 123" <<std::endl;
-	map2.erase("a.");
+	map2.erase("b");
+	map2.display_tree(true);	
 	//map2.erase("j");
 	//map2.erase("ee");
 	//map2.erase("123");
