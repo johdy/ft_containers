@@ -96,7 +96,7 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	map.insert(paire6);
 	int i = 0;
 	std::string a = "a";
-	while (++i < 2) {
+	while (++i < 50) {
 		//map.display_tree(true);
 		map.insert(NAMESPACE::pair<std::string, int>(a.append(1, '.'), i));
 	}
@@ -114,7 +114,7 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	std::cout << "-----> constructeur par copie de map2" <<std::endl;
 	NAMESPACE::map<std::string, int> map2(map);
 	//display_tree_beg_to_end(map2, "map2");
-	map2.display_tree(true);
+	//map2.display_tree(true);
 	//map2["bef"] = 1007;
 	std::cout << "-----> erase par key de d, j et 123" <<std::endl;
 	map2.erase("b");
@@ -123,17 +123,17 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	map2.erase("ee");
 	map2.erase("123");
 	map2.display_tree(true);
-	//map2.erase("aa");
-	//map2.display_tree(true);
-	//map2.erase("bef");
-	//map2.erase("d");
-	//map2.erase("grp");
-	//map2.erase("b");
-	//map2.erase("f");
-	//display_tree_beg_to_end(map2, "map2");
-	//map.display_tree(true);
-	//map2.display_tree();
-	/*display_tree_beg_to_end(map2, "map2");
+	map2.erase("aa");
+	map2.display_tree(true);
+	map2.erase("bef");
+	map2.erase("d");
+	map2.erase("grp");
+	map2.erase("b");
+	map2.erase("f");
+	display_tree_beg_to_end(map2, "map2");
+	map.display_tree(true);
+	map2.display_tree();
+	display_tree_beg_to_end(map2, "map2");
 	display_tree_beg_to_end(map, "map1");
 	std::cout << "-----> constructeur par range de map3 map2.begin() a map2.end()" <<std::endl;
 	NAMESPACE::map<std::string, int> map3(map2.begin(),map2.end());
@@ -160,7 +160,7 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	display_tree_beg_to_end(map3, "map3");
 	std::cout << "-----> erase de map1 jsq --end par range (root compris)" <<std::endl;
 	map.erase(map.begin(), --(map.end()));
-	display_tree_beg_to_end(map, "map1");*/
+	display_tree_beg_to_end(map, "map1");
 }
 
 int main() {

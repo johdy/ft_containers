@@ -384,6 +384,7 @@ namespace ft {
 			Node *right_tmp = n1->_right;
 			bool black_tmp = n1->_black;
 
+			std::cout << n1 << "/" << n2 << std::endl;
 			if (n1->_parent && n1->_parent->_left == n1)
 				n1->_parent->_left = n2;
 			else if (n1->_parent)
@@ -400,6 +401,10 @@ namespace ft {
 			n1->_parent = n2->_parent;
 			n1->_left = n2->_left;
 			n1->_right = n2->_right;
+			if (n1->_right)
+				n1->_right->_parent = n1;
+			if (n1->_left)
+				n1->_left->_parent = n1;
 			n1->_black = n2->_black;
 			if (n1->_left == n1)
 				n1->_left = n2;
@@ -407,10 +412,14 @@ namespace ft {
 				n1->_right = n2;
 			if (n1->_parent == n1)
 				n1->_parent = n2;
-
+			std::cout << "parent_tmp" << parent_tmp << std::endl;
 			n2->_parent = parent_tmp;
 			n2->_left = left_tmp;
 			n2->_right = right_tmp;
+			if (n2->_right)
+				n2->_right->_parent = n2;
+			if (n2->_left)
+				n2->_left->_parent = n2;
 			n2->_black = black_tmp;
 			if (n2->_left == n2)
 				n2->_left = n1;
@@ -418,6 +427,7 @@ namespace ft {
 				n2->_right = n1;
 			if (n2->_parent == n2)
 				n2->_parent = n1;
+			std::cout << "n2->_parent" << n2->_parent << std::endl;
 		}
 
 		void erase(iterator position) {
@@ -426,7 +436,9 @@ namespace ft {
 			std::cout<< position->first << std::endl;
 			if (to_suppr->_left && to_suppr->_right) {
 				Node *replacement = rightest_from(to_suppr->_left);
-				std::cout<< to_suppr << std::endl;
+
+				std::cout<< "in erase " << to_suppr << ": " << to_suppr->_value->first << std::endl;
+				display_tree(true);
 				/*std::cout << "Node1_ to suppr : " << to_suppr << " // LEFT : " << to_suppr->_left << " // RIGHT : " << to_suppr->_right << " // PARENT : "
 				<< to_suppr->_parent << std::endl;
 				std::cout << "Node2_ replacement : " << replacement << " // LEFT : " << replacement->_left << " // RIGHT : " << replacement->_right << " // PARENT : "
@@ -602,6 +614,7 @@ namespace ft {
 			iterator head = last;
 			key_type stop_val = first->first;
 			while (1) {
+				display_tree(true);
 				if ((--head)->first == stop_val) 
 					break ;
 				this->erase(head);
