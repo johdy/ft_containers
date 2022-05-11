@@ -267,6 +267,14 @@ namespace ft {
 			return (node->_parent->_parent);			
 		}
 
+		Node *sibling(Node *node) {
+			if (node->_parent == NULL)
+				return (NULL);
+			if (node->_parent->_left == node)
+				return (node->_parent->_right);
+			return (node->_parent->_left);
+		}
+
 		Node *oncle(Node *node) {
 			if (!grand_parent(node))
 				return (NULL);
@@ -451,6 +459,65 @@ namespace ft {
 		}
 
 		void delete_case_2(Node *n) {
+			if (!is_node_black(sibling(n))) {
+				n->_parent->_black = false;
+				sibling(n)->_black = true;
+				if (n->_parent->_left == n)
+					rotate_left(n->_parent);
+				else
+					rotate_right(n->_parent);
+			}
+			delete_case_3(n);
+		}
+
+		void delete_case_3(Node *n) {
+			if (is_node_black(n->_parent) && is_node_black(sibling(n))
+				&& is_node_black(sibling(n)->_left) && is_node_black(sibling(n)->_right)) {
+				sibling(n)->_black = false;
+				delete_case_1(n->_parent);
+			}
+			else
+				delete_case_4(n);
+		}
+
+		void delete_case_4(Node *n) {
+			if (!is_node_black(n->_parent) && is_node_black(sibling(n))
+				&& is_node_black(sibling(n)->_left) && is_node_black(sibling(n)->_right)) {
+				sibling(n)->_black = false;
+				n->_parent->_black = true;
+			}
+			else
+				delete_case_5(n);
+		}
+
+		void delete_case_5(Node *n) {
+			if (n->_parent->_left == n && is_node_black(sibling(n))
+				&& !is_node_black(sibling(n)->_left) && is_node_black(sibling(n)->_right)) {
+				sibling(n)->_black = false;
+				sibling(n)->_left->_black = true;
+				rotate_right(sibling(n));
+			}
+			else if (n->_parent->_right == n && is_node_black(sibling(n))
+				&& is_node_black(sibling(n)->_left) && !is_node_black(sibling(n)->_right)) {
+				sibling(n)->_black = false;
+				sibling(n)->_right->_black = true;
+				rotate_left(sibling(n));
+			}
+			else
+				delete_case_6(n);
+		}
+
+		void delete_case_6(Node *n) {
+			sibling(n)->_black = is_node_black(n->_parent);
+			n->_parent->_black = true;
+			if (n->_parent->_left == n && !is_node_black(sibling(n)->_right)) {
+				sibling(n)->_right->_black = true;
+				rotate_left(n->_parent);
+			}
+			else if (n->_parent->_right == n && !is_node_black(sibling(n)->_left)) {
+				sibling(n)->_left->_black = true;
+				rotate_right(n->_parent);
+			}
 		}
 
 		template<class InputIterator>
@@ -524,7 +591,6 @@ namespace ft {
 
 		size_type erase (const key_type& k) {
 			iterator locate = this->find(k);
-			std::cout << k << "//" << locate->first <<std::endl;
 			if (locate == this->end()) {
 				return (0);
 			}

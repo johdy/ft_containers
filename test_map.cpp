@@ -52,10 +52,10 @@ void test_ft_map_iterators(NAMESPACE::map<std::string, int> &test) {
 	//std::cout << (--it).base() << std::endl;
 	//std::cout << (--it).base() << std::endl;
 	//test.display_tree();
-	//test.erase("aa");
+	test.erase("aa");
 	//test.erase((test.find("c")), test.end());
 	//test.display_tree();
-	//test.erase("f");
+	test.erase("f");
 	/*test.erase("ee");
 	test.display_tree();
 	test.erase("123");
@@ -66,7 +66,7 @@ void test_ft_map_iterators(NAMESPACE::map<std::string, int> &test) {
 	test.display_tree();*/
 	//test.erase("ee");
 	//std::cout<< "ko"<< std::endl;
-	//test.display_tree();
+	test.display_tree(true);
 	//test.erase("10");
 	//test.display_tree();
 
@@ -119,10 +119,10 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	std::cout << "-----> erase par key de d, j et 123" <<std::endl;
 	map2.erase("b");
 	map2.display_tree(true);	
-	//map2.erase("j");
-	//map2.erase("ee");
-	//map2.erase("123");
-	//map2.display_tree(true);
+	map2.erase("j");
+	map2.erase("ee");
+	map2.erase("123");
+	map2.display_tree(true);
 	//map2.erase("aa");
 	//map2.display_tree(true);
 	//map2.erase("bef");
