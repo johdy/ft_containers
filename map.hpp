@@ -52,60 +52,6 @@ namespace ft {
     		return (new_node);
     	}
 
-		void	add_range_except(iterator first, iterator last_included, iterator avoid) {
-    		iterator middle = first;
-    		iterator to_suppr = first++;
-    		/*size_t size = 0;
-
-   			while (middle != last_included) {
-    			++size;
-    			++middle;
-    		}
-    		if (size == 0)
-    			return ;
-    		size = size / 2 + 1;
-    		while (--size)
-    			--middle;
-    		if (middle != avoid)
-    			this->re_add(middle.base());
-    		iterator middle2 = middle;
-    		iterator it = middle;
-    		iterator it2 = ++middle2;
-  			std::cout << size << std::endl;
-	  		while (it != first && it2 != last_included) {
-    			if (it != avoid)
-    				this->re_add(it.base());
-    			if (it2 != avoid)
-    				this->re_add(it2.base());
-    			it = middle--;
-    			it2 = middle2++;
-    			it.base()->_left = NULL;
-    			it.base()->_right = NULL;
-    			it2.base()->_left = NULL;
-    			it2.base()->_right = NULL;
-    			std::cout << it->first << "/" << first->first << it2->first << last_included->first << std::endl;
-    		}
-	   		it = middle;
-	   		iterator 
-    		while (it++ != last_included) {
-    			if (it != avoid)
-    				this->re_add(*it);
-    		}
-    		*/
-    		while (to_suppr != last_included && to_suppr.base() != _end) {
-    			to_suppr.base()->_left = NULL;
-    			to_suppr.base()->_right = NULL;
-    			if (to_suppr != avoid)
-    				re_add(to_suppr.base());
-    			to_suppr = first++;
-	 		}
-			//std::cout << to_suppr->first << std::endl;
-			to_suppr.base()->_left = NULL;
-			to_suppr.base()->_right = NULL;
-			if (to_suppr != avoid)
-				re_add(to_suppr.base());
-		}
-
 	public:
 
 		BST() {
@@ -129,7 +75,6 @@ namespace ft {
     	}
 
     	void clear() {
-    		std::cout << _root << std::endl;
     		if (_root)
     			suppress_BST(_root);
 			_value_alloc.deallocate(_end->_value, 1);
@@ -228,33 +173,6 @@ namespace ft {
 		    to_rot->_parent = left;
 		}
 
-    	void re_add(Node *node) {
-    		Node *next;
-    		Node *parent;
-
-    		next = _root;
-    		while (next != NULL && next != _end) {
-    			parent = next;
-    			if (_comp(node->_value->first, next->_value->first))
-    				next = next->_left;
-    			else if (_comp(next->_value->first, node->_value->first))
-    				next = next->_right;
-    			else
-    				return ;
-    		}
-			if (_comp(node->_value->first, parent->_value->first))
-				parent->_left = node;
-			else if (!_comp(node->_value->first, parent->_value->first))
-				parent->_right = node;
-			node->_parent = parent;
-			node->_right = NULL;
-			node->_left = NULL;
-			if (next == _end) {
-				node->_right = _end;
-				_end->_parent = node;
-			}
-		}
-
 		bool is_node_black(Node *node) {
 			if (!node)
 				return (true);
@@ -293,10 +211,8 @@ namespace ft {
 		}
 
 		void insert_case_1(Node *new_node) {
-			if (new_node->_parent == NULL) {
-				std::cout << "case1" << std::endl;
+			if (new_node->_parent == NULL)
 				new_node->_black = true;
-			}
 			else
 				insert_case_2(new_node);
 		}
@@ -304,20 +220,16 @@ namespace ft {
 		void insert_case_2(Node *new_node) {
 			if (!new_node->_parent->_black) 
 				insert_case_3(new_node);
-			else
-				std::cout << "case2" << std::endl;
 		}
 
 		void insert_case_3(Node *new_node) {
 			if (!is_node_black(oncle(new_node))) {
-				std::cout << oncle(new_node) << std::endl;
 				if (oncle(new_node))
 					oncle(new_node)->_black = true;
 				new_node->_parent->_black = true;
 				if (grand_parent(new_node))
 					grand_parent(new_node)->_black = false;
 				insert_case_1(grand_parent(new_node));
-				std::cout << "case3" << std::endl;
 			}
 			else
 				insert_case_4(new_node);
@@ -336,7 +248,6 @@ namespace ft {
 		}
 
 		void insert_case_5(Node *new_node) {
-			std::cout << "case5" << std::endl;
 			new_node->_parent->_black = true;
 			grand_parent(new_node)->_black = false;
 			if (new_node == new_node->_parent->_left && new_node->_parent == grand_parent(new_node)->_left)
@@ -347,8 +258,8 @@ namespace ft {
 
 
     	ft::pair<iterator,bool> add(const T& pair, bool hint = false, iterator hint_it = NULL) {
-    		++_size;
-    		if (_size == 1) {
+    		if (_size == 0) {
+    			++_size;
 				_value_alloc.construct(_root->_value, pair);
 				insert_case_1(_root);
     			return (ft::pair<iterator,bool>(iterator(_root), true));
@@ -358,7 +269,7 @@ namespace ft {
     		Node *parent;
 
     		if (hint)
-    			 next = hint_it.base();
+    			next = hint_it.base();
     		else
     			next = _root;
     		while (next != NULL && next != _end) {
@@ -382,6 +293,7 @@ namespace ft {
 				new_node->_right = _end;
 				_end->_parent = new_node;
 			}
+    		++_size;
 			insert_case_1(new_node);
 			return (ft::pair<iterator,bool>(iterator(new_node), true));
 		}
@@ -392,7 +304,6 @@ namespace ft {
 			Node *right_tmp = n1->_right;
 			bool black_tmp = n1->_black;
 
-			std::cout << n1 << "/" << n2 << std::endl;
 			if (n1->_parent && n1->_parent->_left == n1)
 				n1->_parent->_left = n2;
 			else if (n1->_parent)
@@ -414,7 +325,6 @@ namespace ft {
 			if (n1->_left)
 				n1->_left->_parent = n1;
 			n1->_black = n2->_black;
-			std::cout << "parent_tmp" << parent_tmp << std::endl;
 			n2->_parent = parent_tmp;
 			n2->_left = (left_tmp == n2) ? n1 : left_tmp;
 			n2->_right = (right_tmp == n2) ? n1 : right_tmp;
@@ -424,42 +334,6 @@ namespace ft {
 				n2->_left->_parent = n2;
 			n2->_black = black_tmp;
 
-			std::cout << "n2->_parent" << n2->_parent << std::endl;
-		}
-
-		void erase(iterator position) {
-			Node *to_suppr = position.base();
-			--_size;
-			std::cout<< position->first << std::endl;
-			if (to_suppr->_left && to_suppr->_right) {
-				Node *replacement = rightest_from(to_suppr->_left);
-
-				std::cout<< "in erase " << to_suppr << ": " << to_suppr->_value->first << std::endl;
-				display_tree(true);
-				/*std::cout << "Node1_ to suppr : " << to_suppr << " // LEFT : " << to_suppr->_left << " // RIGHT : " << to_suppr->_right << " // PARENT : "
-				<< to_suppr->_parent << std::endl;
-				std::cout << "Node2_ replacement : " << replacement << " // LEFT : " << replacement->_left << " // RIGHT : " << replacement->_right << " // PARENT : "
-				<< replacement->_parent << std::endl;*/
-				swap_node(to_suppr, replacement);
-				/*std::cout << "Node1_ to suppr : " << to_suppr << " // LEFT : " << to_suppr->_left << " // RIGHT : " << to_suppr->_right << " // PARENT : "
-				<< to_suppr->_parent << std::endl;
-				std::cout << "Node2_ replacement : " << replacement << " // LEFT : " << replacement->_left << " // RIGHT : " << replacement->_right << " // PARENT : "
-				<< replacement->_parent << std::endl;*/
-				std::cout<< to_suppr << std::endl;
-				//replacement->_left = to_suppr->_left;
-				//replacement->_right = to_suppr->_right;
-				//replace_node(replacement_tmp, to_suppr);
-				display_tree(true);
-			}
-			Node *children = to_suppr->_right ? to_suppr->_right : to_suppr->_left;
-			if (is_node_black(to_suppr)) {
-				to_suppr->_black = is_node_black(children);
-				delete_case_1(to_suppr);
-			}
-			replace_node(to_suppr, children);
-			if (!to_suppr->_parent && children)
-				children->_black = true;
-			destroy_node(to_suppr);
 		}
 
 		void delete_case_1(Node *n) {
@@ -543,7 +417,7 @@ namespace ft {
 			Node *head = _root;
 			iterator candidate = this->end();
 
-			while (head) {
+			while (_size && head) {
 				if (!_comp(head->_value->first, k))
 					candidate = head;
 				if (_comp(k, head->_value->first))
@@ -560,7 +434,7 @@ namespace ft {
 			Node *head = _root;
 			iterator candidate = this->end();
 
-			while (head) {
+			while (_size && head) {
 				if (_comp(k, head->_value->first))
 					candidate = head;
 				if (_comp(k, head->_value->first))
@@ -575,7 +449,7 @@ namespace ft {
 		iterator find (const key_type& k) const {
 			Node *head = _root;
 
-			while (head && head != _end) {
+			while (_size && head && head != _end) {
 				if (_comp(head->_value->first, k))
 					head = head->_right;
 				else if (_comp(k, head->_value->first))
@@ -586,19 +460,33 @@ namespace ft {
 			return (this->end());
 		}
 
-		void root_erasing(Node *val) {
-			_root = val;
-			_root->_parent = _root;
-			_root->_right = _end;
-			_end->_parent = _root;
-			return;
-		}
-
 		void destroy_node(Node *suppr_node) {
 			_value_alloc.destroy(suppr_node->_value);
 			_value_alloc.deallocate(suppr_node->_value, 1);
 			_node_alloc.destroy(suppr_node);
 			_node_alloc.deallocate(suppr_node, 1);			
+		}
+
+		void erase(iterator position) {
+			Node *to_suppr = position.base();
+			--_size;
+			if (_size == 0) {
+				this->clear();
+				return ;
+			}
+			if (to_suppr->_left && to_suppr->_right) {
+				Node *replacement = rightest_from(to_suppr->_left);
+				swap_node(to_suppr, replacement);
+			}
+			Node *children = to_suppr->_right ? to_suppr->_right : to_suppr->_left;
+			if (is_node_black(to_suppr)) {
+				to_suppr->_black = is_node_black(children);
+				delete_case_1(to_suppr);
+			}
+			replace_node(to_suppr, children);
+			if (!to_suppr->_parent && children)
+				children->_black = true;
+			destroy_node(to_suppr);
 		}
 
 		size_type erase (const key_type& k) {
@@ -611,12 +499,12 @@ namespace ft {
 		}
 
 		void erase (iterator first, iterator last) {
+			if (first == last)
+				return ;
 			iterator head = last;
 			key_type stop_val = first->first;
 			while (1) {
-				std::cout << "okzok " << (--head)->first << std::endl;
-				display_tree(true);
-				if ((head)->first == stop_val) 
+				if ((--head)->first == stop_val) 
 					break ;
 				this->erase(head);
 				head = last;
@@ -719,6 +607,10 @@ namespace ft {
 			return (_bst.erase(first, last));			
 		}
 
+		void clear() {
+			_bst.clear();
+		}
+
 		iterator begin() const {return _bst.begin();}
 		//const_iterator begin() {return _bst.begin();}
 
@@ -740,17 +632,10 @@ namespace ft {
 		}
 
 		void swap (map& x) {
-			key_compare							tmp_comp = _comp;
-			allocator_type						tmp_alloc = _alloc;
-			ft::BST<value_type, key_compare>	tmp_bst = _bst;
+			ft::map<Key, T, Compare, Alloc>		tmp_map(*this);
 
-			_bst = x._bst;
-			_alloc = x._alloc;
-			_comp = x._comp;
-
-			x._bst = tmp_bst;
-			x._alloc = tmp_alloc;
-			x._comp = tmp_comp;
+			*this = x;
+			x = tmp_map;
 		}
 
 		iterator find (const key_type& k) { return (_bst.find(k)); }

@@ -8,8 +8,9 @@
 void display_tree_beg_to_end(NAMESPACE::map<std::string, int> &test, std::string name) {
 	NAMESPACE::map<std::string, int>::iterator it_beg = test.begin();
 	NAMESPACE::map<std::string, int>::iterator it_end = test.end();
-	std::cout << "-----MAP " << name << " of SIZE = " << test.size() << "-----" << std::endl;
-	while (it_beg != it_end) {
+	size_t size = test.size();
+	std::cout << "---MAP " << name << " of SIZE = " << size << "---" << std::endl;
+	while (size != 0 && it_beg != it_end) {
 		std::cout << (it_beg)->first << " : " << it_beg->second << std::endl;
 		++it_beg;
 	}
@@ -66,14 +67,61 @@ void test_ft_map_iterators(NAMESPACE::map<std::string, int> &test) {
 	test.display_tree();*/
 	//test.erase("ee");
 	//std::cout<< "ko"<< std::endl;
-	test.display_tree(true);
+	//test.display_tree(true);
 	//test.erase("10");
 	//test.display_tree();
 
+
+}
+
+void test_ft_modifiers(NAMESPACE::map<std::string, int> &map) {
+	std::cout << "-/-/-/-/-/-/-/-/-/- Suite des tests modifiers -/-/-/-/-/-/-/-/-/-" << std::endl;
+	std::cout << "-----> construction de map 2 et swap avec map 1" <<std::endl;
+	NAMESPACE::map<std::string, int> map2(map);
+	NAMESPACE::map<std::string, int>::iterator it;
+	map2["zippo"] = 33;
+	map2.erase("b");
+	map2["hollow"] = 91;
+
+	display_tree_beg_to_end(map, "map 1");
+	display_tree_beg_to_end(map2, "map 2");
+	map2.swap(map);
+	display_tree_beg_to_end(map, "map 1");
+	display_tree_beg_to_end(map2, "map 2");
+	std::cout << "-----> clear de map 1 et reswap" <<std::endl;
+	map.clear();
+	it = map2.begin();
+	map.swap(map2);
+	std::cout << it->first << std::endl;
+	display_tree_beg_to_end(map, "map 1");
+	display_tree_beg_to_end(map2, "map 2");
+	std::cout << "-----> reclear de map 2" <<std::endl;
+	map2.clear();
+	display_tree_beg_to_end(map2, "map 2");
+	std::cout << "-----> erase dans deux maps de 'bonjour' puis insert dans 1 de c :: 17 avec retention iterator de retour" << std::endl;
+	NAMESPACE::pair<std::string, int> paire("c", 17);
+	map.erase("bonjour");
+	map2.erase("bonjour");
+	it = map.insert(paire).first;
+	std::cout << "iterateur retour pointe sur : " << it->first << std::endl;
+	display_tree_beg_to_end(map, "map 1");
+	map.insert(map.begin(), map.end());
+}
+
+void test_ft_map_modifiers_big_time(NAMESPACE::map<std::string, int> &map) {
+	int i = 0;
+	std::string a = "a";
+	while (++i < 15000) {
+		map.insert(NAMESPACE::pair<std::string, int>(a.append(1, '.'), i));
+	}
+	std::cout << "-----> insert de 15000 paires de a. a a................" <<std::endl;
+	display_tree_beg_to_end(map, "map1");
+	map.erase(map.begin(), map.end());
+	display_tree_beg_to_end(map, "map1");
 }
 
 void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
-	std::cout << "----------- début tests test_ft_map_constructeur + modifiers et element access -----------" << std::endl;
+	std::cout << "-/-/-/-/-/-/-/-/-/- début tests test_ft_map_constructeur + element access et modifiers part 1 -/-/-/-/-/-/-/-/-/-" << std::endl;
 	std::string ee("ee");
 	std::string aa("aa");
 	NAMESPACE::pair<std::string, int> paire1(ee, 7);
@@ -84,63 +132,33 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	NAMESPACE::pair<std::string, int> paire6("c", 18);
 	std::cout << "-----> insert de paires ee, b, d, f, aa, c" <<std::endl;
 	map.insert(paire1);
-	map.display_tree(true);
 	map.insert(paire2);
-	map.display_tree(true);
 	map.insert(paire3);
-	map.display_tree(true);
 	map.insert(paire4);
-	map.display_tree(true);
 	map.insert(paire5);
-	map.display_tree(true);
 	map.insert(paire6);
-	int i = 0;
-	std::string a = "a";
-	while (++i < 50) {
-		//map.display_tree(true);
-		map.insert(NAMESPACE::pair<std::string, int>(a.append(1, '.'), i));
-	}
 	display_tree_beg_to_end(map, "map1");
 	std::cout << "-----> accessor[], modification de la valeur de d, de 123, de grp puis de 123" <<std::endl;
 	map["d"] = 17;
-	display_tree_beg_to_end(map, "map1");
 	map["123"];
-	display_tree_beg_to_end(map, "map1");
 	map["grp"] = 777;
-	display_tree_beg_to_end(map, "map1");
 	map["123"] = -13;
 	display_tree_beg_to_end(map, "map1");
-	map.display_tree(true);
 	std::cout << "-----> constructeur par copie de map2" <<std::endl;
 	NAMESPACE::map<std::string, int> map2(map);
-	//display_tree_beg_to_end(map2, "map2");
-	//map2.display_tree(true);
-	//map2["bef"] = 1007;
+	display_tree_beg_to_end(map2, "map2");
 	std::cout << "-----> erase par key de d, j et 123" <<std::endl;
 	map2.erase("b");
-	map2.display_tree(true);	
 	map2.erase("j");
-	map2.erase("ee");
 	map2.erase("123");
-	map2.display_tree(true);
-	map2.erase("aa");
-	map2.display_tree(true);
-	map2.erase("bef");
-	map2.erase("d");
-	map2.erase("grp");
-	map2.erase("b");
-	map2.erase("f");
-	display_tree_beg_to_end(map2, "map2");
-	map.display_tree(true);
-	map2.display_tree();
 	display_tree_beg_to_end(map2, "map2");
 	display_tree_beg_to_end(map, "map1");
 	std::cout << "-----> constructeur par range de map3 map2.begin() a map2.end()" <<std::endl;
-	NAMESPACE::map<std::string, int> map3(map2.begin(),map2.end());
+	NAMESPACE::map<std::string, int> map3(map2.begin(), --(map2.end()));
 	display_tree_beg_to_end(map3, "map3");
 	std::cout << "-----> erase de range de map 3 begin to end, puis insert de range de map 1 dans map 3 begin to --end" <<std::endl;
-	//map3.erase(map3.begin(), map3.end());
-	//display_tree_beg_to_end(map3, "map3");
+	map3.erase(map3.begin(), map3.end());
+	display_tree_beg_to_end(map3, "map3");
 	map3.insert(map.begin(), --(map.end()));
 	display_tree_beg_to_end(map3, "map3");
 	std::cout << "-----> erase de map3 jsq --end par l'incrementation d'un iterateur (root compris)" <<std::endl;
@@ -158,9 +176,32 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	it = map3.insert(paire6).first;
 	std::cout << it->first << std::endl;
 	display_tree_beg_to_end(map3, "map3");
-	std::cout << "-----> erase de map1 jsq --end par range (root compris)" <<std::endl;
-	map.erase(map.begin(), --(map.end()));
+	std::cout << "-----> erase de map1 jsq end par range (root compris)" <<std::endl;
+	map.erase(map.begin(), (map.end()));
 	display_tree_beg_to_end(map, "map1");
+
+	std::cout << "-----> Construction map<string, map> et iteration pour affichage, avec map nb 2 = map nb 3" <<std::endl;
+	NAMESPACE::map<std::string, int> map_const(map);
+	NAMESPACE::map<std::string, NAMESPACE::map<std::string, int> > map_inception;
+	NAMESPACE::pair<std::string, NAMESPACE::map<std::string, int> > paire_map("Map nb 1", map);
+	NAMESPACE::pair<std::string, NAMESPACE::map<std::string, int> > paire_map2("Map nb 2", map2);
+	NAMESPACE::pair<std::string, NAMESPACE::map<std::string, int> > paire_map3("Map nb 3", map2);
+	map_inception.insert(paire_map);
+	map_inception.insert(paire_map2);
+	map_inception.insert(paire_map3);
+	NAMESPACE::map<std::string, NAMESPACE::map<std::string, int> >::iterator it_maps = map_inception.begin();
+	while (it_maps != map_inception.end()) {
+		display_tree_beg_to_end(it_maps->second, it_maps->first);
+		++it_maps;
+	}
+	map_inception["Map nb 3"] = map3;
+	std::cout << "-----> modification 'Map nb 3' par accesseur []" <<std::endl;
+	it_maps = map_inception.begin();
+	while (it_maps != map_inception.end()) {
+		display_tree_beg_to_end(it_maps->second, it_maps->first);
+		++it_maps;
+	}
+	map = map3;
 }
 
 int main() {
@@ -171,7 +212,8 @@ int main() {
 	NAMESPACE::map<std::string, int> map;
 
 	test_ft_map_constructeur(map);
-
+	test_ft_modifiers(map);
+	//test_ft_map_modifiers_big_time(map);
 	/*std::cout << "ohh " << map.lower_bound("f")->first << std::endl;
 	std::cout << "ahh " << map.upper_bound("ee")->first << std::endl;
 	ft::pair<NAMESPACE::map<std::string, int>::iterator,NAMESPACE::map<std::string, int>::iterator> range = map.equal_range("cbd");
@@ -182,3 +224,4 @@ int main() {
 	std::cout << (timeend.tv_sec - timebegin.tv_sec)
 			* 1000000 + (timeend.tv_usec - timebegin.tv_usec) << " microsecondes" << std::endl;
 }
+
