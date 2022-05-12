@@ -284,6 +284,14 @@ namespace ft {
 				return (node->_parent->_parent->_left);
 		}
 
+		Node *assertion(Node *n, bool left) {
+			if (!n)
+				return (NULL);
+			if (left)
+				return (n->_left);
+			return (n->_right);
+		}
+
 		void insert_case_1(Node *new_node) {
 			if (new_node->_parent == NULL) {
 				std::cout << "case1" << std::endl;
@@ -398,7 +406,7 @@ namespace ft {
 			else
 				_root = n1;
 
-			n1->_parent = n2->_parent;
+			n1->_parent = (n2->_parent == n1) ? n2 : n2->_parent;
 			n1->_left = n2->_left;
 			n1->_right = n2->_right;
 			if (n1->_right)
@@ -406,27 +414,16 @@ namespace ft {
 			if (n1->_left)
 				n1->_left->_parent = n1;
 			n1->_black = n2->_black;
-			if (n1->_left == n1)
-				n1->_left = n2;
-			if (n1->_right == n1)
-				n1->_right = n2;
-			if (n1->_parent == n1)
-				n1->_parent = n2;
 			std::cout << "parent_tmp" << parent_tmp << std::endl;
 			n2->_parent = parent_tmp;
-			n2->_left = left_tmp;
-			n2->_right = right_tmp;
+			n2->_left = (left_tmp == n2) ? n1 : left_tmp;
+			n2->_right = (right_tmp == n2) ? n1 : right_tmp;
 			if (n2->_right)
 				n2->_right->_parent = n2;
 			if (n2->_left)
 				n2->_left->_parent = n2;
 			n2->_black = black_tmp;
-			if (n2->_left == n2)
-				n2->_left = n1;
-			if (n2->_right == n2)
-				n2->_right = n1;
-			if (n2->_parent == n2)
-				n2->_parent = n1;
+
 			std::cout << "n2->_parent" << n2->_parent << std::endl;
 		}
 
@@ -484,8 +481,9 @@ namespace ft {
 
 		void delete_case_3(Node *n) {
 			if (is_node_black(n->_parent) && is_node_black(sibling(n))
-				&& is_node_black(sibling(n)->_left) && is_node_black(sibling(n)->_right)) {
-				sibling(n)->_black = false;
+				&& is_node_black(assertion(sibling(n), true)) && is_node_black(assertion(sibling(n), false))) {
+				if (sibling(n))
+					sibling(n)->_black = false;
 				delete_case_1(n->_parent);
 			}
 			else
@@ -494,8 +492,9 @@ namespace ft {
 
 		void delete_case_4(Node *n) {
 			if (!is_node_black(n->_parent) && is_node_black(sibling(n))
-				&& is_node_black(sibling(n)->_left) && is_node_black(sibling(n)->_right)) {
-				sibling(n)->_black = false;
+				&& is_node_black(assertion(sibling(n), true)) && is_node_black(assertion(sibling(n), false))) {
+				if (sibling(n))
+					sibling(n)->_black = false;
 				n->_parent->_black = true;
 			}
 			else
@@ -503,13 +502,13 @@ namespace ft {
 		}
 
 		void delete_case_5(Node *n) {
-			if (n->_parent->_left == n && is_node_black(sibling(n))
+			if (sibling(n) && n->_parent->_left == n && is_node_black(sibling(n)) && sibling(n)
 				&& !is_node_black(sibling(n)->_left) && is_node_black(sibling(n)->_right)) {
 				sibling(n)->_black = false;
 				sibling(n)->_left->_black = true;
 				rotate_right(sibling(n));
 			}
-			else if (n->_parent->_right == n && is_node_black(sibling(n))
+			else if (sibling(n) && n->_parent->_right == n && is_node_black(sibling(n)) && sibling(n)
 				&& is_node_black(sibling(n)->_left) && !is_node_black(sibling(n)->_right)) {
 				sibling(n)->_black = false;
 				sibling(n)->_right->_black = true;
@@ -520,13 +519,14 @@ namespace ft {
 		}
 
 		void delete_case_6(Node *n) {
-			sibling(n)->_black = is_node_black(n->_parent);
+			if (sibling (n))
+				sibling(n)->_black = is_node_black(n->_parent);
 			n->_parent->_black = true;
-			if (n->_parent->_left == n && !is_node_black(sibling(n)->_right)) {
+			if (sibling(n) && n->_parent->_left == n && !is_node_black(sibling(n)->_right)) {
 				sibling(n)->_right->_black = true;
 				rotate_left(n->_parent);
 			}
-			else if (n->_parent->_right == n && !is_node_black(sibling(n)->_left)) {
+			else if (sibling(n) && n->_parent->_right == n && !is_node_black(sibling(n)->_left)) {
 				sibling(n)->_left->_black = true;
 				rotate_right(n->_parent);
 			}
@@ -614,8 +614,9 @@ namespace ft {
 			iterator head = last;
 			key_type stop_val = first->first;
 			while (1) {
+				std::cout << "okzok " << (--head)->first << std::endl;
 				display_tree(true);
-				if ((--head)->first == stop_val) 
+				if ((head)->first == stop_val) 
 					break ;
 				this->erase(head);
 				head = last;
