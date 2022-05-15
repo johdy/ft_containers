@@ -14,6 +14,7 @@ namespace ft {
 		typedef size_t size_type;
 		typedef typename value_type::first_type key_type;
 		typedef typename value_type::second_type second_type;
+		typedef Node typenode;
     private:
     	Node			*_root;
     	node_alloc		_node_alloc;
@@ -74,6 +75,19 @@ namespace ft {
 			_node_alloc.deallocate(_end, 1);
     	}
 
+		BST& operator= (const BST& x) {
+			std::cout << "hello"<< std::endl;
+			if (this == &x)
+				return (*this);
+			_comp = x._comp;
+			_node_alloc = x._node_alloc;
+			_value_alloc = x._value_alloc;
+			_size = x._size;
+			_root = x._root;
+			_end = x._end;
+			return (*this);
+		}
+
     	void clear() {
     		if (_root)
     			suppress_BST(_root);
@@ -131,7 +145,8 @@ namespace ft {
 
     	void display_tree(bool debug) {
     		std::cout << "tree size : " << _size << std::endl;
-    		display_recursif(_root, 0, debug);
+    		if (_size != 0)
+    			display_recursif(_root, 0, debug);
     	}
 
     	size_type	size() const {return _size;}
@@ -268,8 +283,15 @@ namespace ft {
     		Node *next;
     		Node *parent;
 
-    		if (hint)
+    		if (hint && hint_it != this->end()) {
+    			while (_comp(hint_it->first, pair.first) && hint_it.base() != _end)
+    				++hint_it;
+    			if (hint_it.base() == _end)
+    				--hint_it;
+    			while (_comp(pair.first, hint_it->first) && hint_it != this->begin())
+    				--hint_it;
     			next = hint_it.base();
+    		}
     		else
     			next = _root;
     		while (next != NULL && next != _end) {
@@ -511,6 +533,30 @@ namespace ft {
 			}
 			this->erase(head);
 		}
+
+
+		void swap (BST& x) {
+	    	Node			*tmp_root = _root;
+	    	node_alloc		tmp_node_alloc = _node_alloc;
+	    	value_alloc		tmp_value_alloc = _value_alloc;
+	    	Compare			tmp_comp = _comp;
+	    	size_type		tmp_size = _size;
+			Node			*tmp_end = _end;
+
+			_root = x._root;
+			_node_alloc = x._node_alloc;
+			_value_alloc = x._value_alloc;
+			_comp = x._comp;
+			_size = x._size;
+			_end = x._end;
+
+			x._root = tmp_root;
+			x._node_alloc = tmp_node_alloc;
+			x._value_alloc = tmp_value_alloc;
+			x._comp = tmp_comp;
+			x._size = tmp_size;
+			x._end = tmp_end;
+		}
 	};
 
 	template< class Key, class T, class Compare = ft::less<Key>, class Alloc = std::allocator<pair<const Key,T> > >
@@ -632,10 +678,15 @@ namespace ft {
 		}
 
 		void swap (map& x) {
-			ft::map<Key, T, Compare, Alloc>		tmp_map(*this);
+			key_compare											tmp_comp = _comp;
+			allocator_type										tmp_alloc = _alloc;
 
-			*this = x;
-			x = tmp_map;
+			_bst.swap(x._bst);
+			_alloc = x._alloc;
+			_comp = x._comp;
+
+			x._alloc = tmp_alloc;
+			x._comp = tmp_comp;
 		}
 
 		iterator find (const key_type& k) { return (_bst.find(k)); }

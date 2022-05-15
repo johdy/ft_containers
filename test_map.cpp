@@ -79,6 +79,7 @@ void test_ft_modifiers(NAMESPACE::map<std::string, int> &map) {
 	std::cout << "-----> construction de map 2 et swap avec map 1" <<std::endl;
 	NAMESPACE::map<std::string, int> map2(map);
 	NAMESPACE::map<std::string, int>::iterator it;
+	it = map.begin();
 	map2["zippo"] = 33;
 	map2.erase("b");
 	map2["hollow"] = 91;
@@ -88,11 +89,12 @@ void test_ft_modifiers(NAMESPACE::map<std::string, int> &map) {
 	map2.swap(map);
 	display_tree_beg_to_end(map, "map 1");
 	display_tree_beg_to_end(map2, "map 2");
+	std::cout << "-----> iteration de l'iterateur construit à map.begin() avant le swap" << std::endl;
+	while (it != map2.end())
+		std::cout << (it++)->first << std::endl;
 	std::cout << "-----> clear de map 1 et reswap" <<std::endl;
 	map.clear();
-	it = map2.begin();
 	map.swap(map2);
-	std::cout << it->first << std::endl;
 	display_tree_beg_to_end(map, "map 1");
 	display_tree_beg_to_end(map2, "map 2");
 	std::cout << "-----> reclear de map 2" <<std::endl;
@@ -106,6 +108,17 @@ void test_ft_modifiers(NAMESPACE::map<std::string, int> &map) {
 	std::cout << "iterateur retour pointe sur : " << it->first << std::endl;
 	display_tree_beg_to_end(map, "map 1");
 	map.insert(map.begin(), map.end());
+	std::cout << "-----> insert avec hint" << std::endl;
+	NAMESPACE::pair<std::string, int> paire2("bol", 41);
+	NAMESPACE::pair<std::string, int> paire3("azerty", 6);
+	NAMESPACE::pair<std::string, int> paire4("h", 10);
+	NAMESPACE::pair<std::string, int> paire5("zz", 5);
+	map.insert(it, paire2);
+	map.insert(it, paire3);
+	map.insert(map.end(), paire4);
+	map.insert(map.begin(), paire5);
+	display_tree_beg_to_end(map, "map 1");
+
 }
 
 void test_ft_map_modifiers_big_time(NAMESPACE::map<std::string, int> &map) {
