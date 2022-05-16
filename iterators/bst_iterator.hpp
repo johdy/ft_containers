@@ -12,16 +12,16 @@ namespace ft {
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer pointer;
 		typedef	typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference reference;
 		typedef	typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type difference_type;
-		typedef U under_type;
+		typedef typename ft::node<T>* node_pointer;
 
 	private:
-		pointer _elem;
+		node_pointer _elem;
 
 	public:
 		bst_iterator() : _elem(0) {
 		}
 
-		bst_iterator( pointer x ) { 
+		bst_iterator( node_pointer x ) { 
 			this->_elem = x;
 		}
 
@@ -39,10 +39,10 @@ namespace ft {
 			return (*this);
 		}
 
-		under_type* operator->() { return _elem->_value; }
+		pointer operator->() { return _elem->_value; }
 
-		pointer base() const { return (_elem); }
-		under_type& operator*() const { return *(_elem->_value); }
+		node_pointer base() const { return (_elem); }
+		reference operator*() const { return *(_elem->_value); }
 
 		bst_iterator& operator++() {
 			if (_elem->_right)
@@ -95,7 +95,9 @@ namespace ft {
 			--(*this);
 			return (cpy);
 		}
+		bool operator==(bst_iterator& rhs) { return (_elem == rhs.base()); }
 
+		bool operator!=(bst_iterator& rhs) { return (_elem != rhs.base()); }
 	};
 
 	template <typename T, typename U>

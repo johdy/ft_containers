@@ -3,13 +3,14 @@
 # include "pair.hpp"
 # include <iostream>
 # include "iterators/bst_iterator.hpp"
+# include "iterators/reverse_iterator.hpp"
 # include "utils.hpp"
 namespace ft {
 	template< class T, class Compare, class value_alloc = std::allocator<T>, class Node = ft::node<T>, class node_alloc = std::allocator<ft::node<T> > >
     class BST {
     public:
 		typedef T value_type;
-		typedef typename ft::bst_iterator<Node, value_type> iterator;
+		typedef typename ft::bst_iterator<value_type, Compare> iterator;
 		typedef Compare key_compare;
 		typedef size_t size_type;
 		typedef typename value_type::first_type key_type;
@@ -133,11 +134,11 @@ namespace ft {
 				return ;
 			}
 			if (debug) {
-				std::cout << "LEVEL : " << level << " ( " << node_to_disp <<" ) // " << node_to_disp->_value->first << " : " << node_to_disp->_value->second
+				std::cout << "LEVEL : " << level << " ( " << node_to_disp <<" ) // " << node_to_disp->_value->first
 				<< " // LEFT : " << node_to_disp->_left << " // RIGHT : " << node_to_disp->_right << " // black : " << node_to_disp->_black <<  " // PARENT : " << node_to_disp->_parent << std::endl;
 			}
 			else {
-				std::cout << "(" << level << ")" << node_to_disp->_value->first << ":" << node_to_disp->_value->second << ";";
+				std::cout << "(" << level << ")" << node_to_disp->_value->first << ";";
 				if (node_to_disp == _root)
 					std::cout << std::endl;
 			}
@@ -284,11 +285,11 @@ namespace ft {
     		Node *parent;
 
     		if (hint && hint_it != this->end()) {
-    			while (_comp(hint_it->first, pair.first) && hint_it.base() != _end)
+    			while (hint_it.base() != _end && _comp(hint_it->first, pair.first))
     				++hint_it;
     			if (hint_it.base() == _end)
     				--hint_it;
-    			while (_comp(pair.first, hint_it->first) && hint_it != this->begin())
+    			while (hint_it != this->begin() && _comp(pair.first, hint_it->first))
     				--hint_it;
     			next = hint_it.base();
     		}
@@ -439,7 +440,7 @@ namespace ft {
 			Node *head = _root;
 			iterator candidate = this->end();
 
-			while (_size && head) {
+			while (_size && head && head != _end) {
 				if (!_comp(head->_value->first, k))
 					candidate = head;
 				if (_comp(k, head->_value->first))
@@ -449,14 +450,14 @@ namespace ft {
 				else
 					return (candidate);
 			}
-			return (this->end());
+			return (candidate);
 		}
 
 		iterator upper_bound (const key_type& k) {
 			Node *head = _root;
 			iterator candidate = this->end();
 
-			while (_size && head) {
+			while (_size && head && head != _end) {
 				if (_comp(k, head->_value->first))
 					candidate = head;
 				if (_comp(k, head->_value->first))
@@ -486,7 +487,7 @@ namespace ft {
 			_value_alloc.destroy(suppr_node->_value);
 			_value_alloc.deallocate(suppr_node->_value, 1);
 			_node_alloc.destroy(suppr_node);
-			_node_alloc.deallocate(suppr_node, 1);			
+			_node_alloc.deallocate(suppr_node, 1);
 		}
 
 		void erase(iterator position) {
@@ -567,11 +568,11 @@ namespace ft {
 		typedef ft::pair<key_type,mapped_type> value_type;
 		typedef Compare key_compare;
 		class value_compare {
-			//friend class map<key_type, mapped_type, key_compare, Alloc>;
+			friend class map<key_type, mapped_type, key_compare, Alloc>;
 		protected:
 			Compare _comp;
 
-			value_compare(Compare comp) : _comp(comp) {};
+			value_compare(Compare comp = key_compare()) : _comp(comp) {};
 
 		public:
 			typedef bool result_type;
@@ -586,9 +587,9 @@ namespace ft {
 		typedef typename allocator_type::const_reference const_reference;
 		typedef typename allocator_type::pointer pointer;
 		typedef typename allocator_type::const_pointer const_pointer;
-		typedef typename ft::BST<value_type, value_compare>::iterator iterator;
+		typedef typename ft::BST<value_type, key_compare>::iterator iterator;
 		//typedef const_iterator	a bidirectional iterator to const value_type	
-		//typedef reverse_iterator<iterator> reverse_iterator;	
+		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
 		//typedef reverse_iterator<const_iterator> const_reverse_iterator;	
 		typedef typename iterator_traits<iterator>::difference_type difference_type;
 		typedef size_t size_type;
@@ -650,7 +651,7 @@ namespace ft {
 		}
 
 		void erase (iterator first, iterator last) {
-			return (_bst.erase(first, last));			
+			return (_bst.erase(first, last));
 		}
 
 		void clear() {
@@ -662,6 +663,10 @@ namespace ft {
 
 		iterator end() const {return _bst.end();}
 		//const_iterator end() {return _bst.end();}
+
+		reverse_iterator rbegin() {return reverse_iterator(_bst.end());}
+
+		reverse_iterator rend() {return reverse_iterator(_bst.begin());}
 
 		mapped_type& operator[] (const key_type& k) {
 			iterator it = _bst.find(k);
@@ -678,8 +683,8 @@ namespace ft {
 		}
 
 		void swap (map& x) {
-			key_compare											tmp_comp = _comp;
-			allocator_type										tmp_alloc = _alloc;
+			key_compare		tmp_comp = _comp;
+			allocator_type	tmp_alloc = _alloc;
 
 			_bst.swap(x._bst);
 			_alloc = x._alloc;

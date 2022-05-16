@@ -74,6 +74,66 @@ void test_ft_map_iterators(NAMESPACE::map<std::string, int> &test) {
 
 }
 
+void test_operations(NAMESPACE::map<std::string, int> map) {
+	std::cout << "-/-/-/-/-/-/-/-/-/- Test operations-/-/-/-/-/-/-/-/-/-" << std::endl;
+	std::cout << "-----> find dans map 15007 de azerty, a............, non_existant, zz, zzzz" <<std::endl;
+	int i = 0;
+	std::string a = "a";
+
+	while (++i < 15000) {
+		map.insert(NAMESPACE::pair<std::string, int>(a.append(1, '.'), i));
+	}
+	std::cout << map.find("azerty")->second << std::endl;
+	std::cout << map.find("a............")->second << std::endl;
+	if (map.find("non_existant") == map.end())
+		std::cout << "non_existant n'existe pas dans la map" << std::endl;
+	std::cout << map.find("zz")->second << std::endl;
+	if (map.find("zzzz") == map.end())
+		std::cout << "zzzz n'existe pas dans la map" << std::endl;
+	std::cout << "-----> Memes tests avec count()" <<std::endl;
+	std::cout << map.count("azerty") << std::endl;
+	std::cout << map.count("a............")<< std::endl;
+	std::cout << map.count("non_existant") << std::endl;
+	std::cout << map.count("zz") << std::endl;
+	std::cout << map.count("zzzz") << std::endl;
+	NAMESPACE::map<std::string, int>::iterator it;
+	std::cout << "-----> Memes tests avec equal_range() et affichage lower et upper bound. affichage ensuite lower_bound() et upper_bound()" <<std::endl;
+	NAMESPACE::pair<NAMESPACE::map<std::string, int>::iterator, NAMESPACE::map<std::string, int>::iterator > paire_it;
+	paire_it = map.equal_range("azerty");
+	std::cout << paire_it.first->first << "/" << paire_it.second->first << std::endl;
+	std::cout << map.lower_bound("azerty")->first << "/" << map.upper_bound("azerty")->first << std::endl;
+	paire_it = map.equal_range("a............");
+	std::cout << paire_it.first->second << "/" << paire_it.second->second << std::endl;
+	std::cout << map.lower_bound("a............")->second << "/" << map.upper_bound("a............")->second << std::endl;
+	paire_it = map.equal_range("non_existant");
+	std::cout << paire_it.first->first << "/" << paire_it.second->first << std::endl;
+	std::cout << map.lower_bound("non_existant")->first << "/" << map.upper_bound("non_existant")->first << std::endl;
+	paire_it = map.equal_range("zz");
+	std::cout << paire_it.first->first << "/ upper_bound == end() ? " << (paire_it.second == map.end()) << std::endl;
+	std::cout << map.lower_bound("zz")->first << "/ upper_bound == end() ? " << (map.upper_bound("zz") == map.end()) << std::endl;
+	paire_it = map.equal_range("zzzz");
+	std::cout << "lower_bound == end() ? " << (paire_it.first == map.end())  << "/ upper_bound == end() ? " << (paire_it.second == map.end()) << std::endl;
+	std::cout << "lower_bound == end() ? " << (map.lower_bound("zzzz") == map.end())  << "/ upper_bound == end() ? " << (map.upper_bound("zzzz") == map.end()) << std::endl;
+}
+
+void test_capacity_and_observers(NAMESPACE::map<std::string, int> map) {
+	std::cout << "-/-/-/-/-/-/-/-/-/- Test capacity and observers -/-/-/-/-/-/-/-/-/-" << std::endl;
+	std::cout << "-----> Map 1 est -elle vide ? Puis affichage size" <<std::endl;
+	std::cout << map.empty() << "/" << map.size() << std::endl;
+	std::cout << "-----> Test comparateur entre first et --end puis first et first, key_compare puis value_compare" <<std::endl;
+	NAMESPACE::map<std::string, int>::key_compare compare = map.key_comp();
+	NAMESPACE::map<std::string, int>::value_compare vcompare = map.value_comp();
+	std::cout << compare(map.begin()->first, (--(map.end()))->first) <<std::endl;
+	std::cout << compare((--(map.end()))->first, (--(map.end()))->first) <<std::endl;
+	std::cout << map.value_comp()(*(map.begin()), *(--(map.end()))) << std::endl;
+	std::cout << map.value_comp()(*(map.begin()), *(map.begin())) << std::endl;
+	std::cout << "-----> Clear puis affichage vide? et size" <<std::endl;
+	map.clear();
+	std::cout << map.empty() << "/" << map.size() << std::endl;
+	std::cout << "-----> Affichage max_size" << std::endl;
+	std::cout << map.max_size() << std::endl;
+}
+
 void test_ft_modifiers(NAMESPACE::map<std::string, int> &map) {
 	std::cout << "-/-/-/-/-/-/-/-/-/- Suite des tests modifiers -/-/-/-/-/-/-/-/-/-" << std::endl;
 	std::cout << "-----> construction de map 2 et swap avec map 1" <<std::endl;
@@ -124,11 +184,12 @@ void test_ft_modifiers(NAMESPACE::map<std::string, int> &map) {
 void test_ft_map_modifiers_big_time(NAMESPACE::map<std::string, int> &map) {
 	int i = 0;
 	std::string a = "a";
+
 	while (++i < 15000) {
 		map.insert(NAMESPACE::pair<std::string, int>(a.append(1, '.'), i));
 	}
 	std::cout << "-----> insert de 15000 paires de a. a a................" <<std::endl;
-	display_tree_beg_to_end(map, "map1");
+	//display_tree_beg_to_end(map, "map1");
 	map.erase(map.begin(), map.end());
 	display_tree_beg_to_end(map, "map1");
 }
@@ -226,6 +287,14 @@ int main() {
 
 	test_ft_map_constructeur(map);
 	test_ft_modifiers(map);
+	test_capacity_and_observers(map);
+	test_operations(map);
+	NAMESPACE::map<std::string, int>::reverse_iterator rit = map.rbegin();
+
+	std::cout << rit->first << std::endl;
+	rit = --(map.rend());
+
+	std::cout << rit->first << std::endl;
 	//test_ft_map_modifiers_big_time(map);
 	/*std::cout << "ohh " << map.lower_bound("f")->first << std::endl;
 	std::cout << "ahh " << map.upper_bound("ee")->first << std::endl;
