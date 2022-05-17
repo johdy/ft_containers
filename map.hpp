@@ -2,8 +2,8 @@
 # define MAP_HPP
 # include "pair.hpp"
 # include <iostream>
-# include "iterators/bst_iterator.hpp"
-# include "iterators/reverse_iterator.hpp"
+# include "bst_iterator.hpp"
+# include "reverse_iterator.hpp"
 # include "utils.hpp"
 namespace ft {
 	template< class T, class Compare, class value_alloc = std::allocator<T>, class Node = ft::node<T>, class node_alloc = std::allocator<ft::node<T> > >
@@ -11,6 +11,7 @@ namespace ft {
     public:
 		typedef T value_type;
 		typedef typename ft::bst_iterator<value_type, Compare> iterator;
+		typedef typename ft::const_bst_iterator<value_type, Compare> const_iterator;
 		typedef Compare key_compare;
 		typedef size_t size_type;
 		typedef typename value_type::first_type key_type;
@@ -64,6 +65,7 @@ namespace ft {
     	BST(InputIterator first, InputIterator last,
     		const key_compare comp = key_compare()) {
 
+    		_comp = comp;
     		this->initialize();
     		this->add_range(first, last);
     	}
@@ -110,7 +112,7 @@ namespace ft {
 			_end->_black = true;
     	}
 
-		iterator begin() const {
+		iterator begin() {
 			if (_size == 0)
 				return (iterator(_end));
 			Node *head = _root;
@@ -119,8 +121,21 @@ namespace ft {
 			return (iterator(head));
 		}
 
-		iterator end() const { 
+		iterator end() { 
 			return (iterator(_end));
+		}
+
+		const_iterator begin() const {
+			if (_size == 0)
+				return (const_iterator(_end));
+			Node *head = _root;
+			while (head->_left)
+				head = head->_left;
+			return (const_iterator(head));
+		}
+
+		const_iterator end() const { 
+			return (const_iterator(_end));
 		}
 
     	void display_recursif(Node *node_to_disp, int level, bool debug) {
@@ -430,7 +445,7 @@ namespace ft {
 		}
 
 		template<class InputIterator>
-		void	add_range(InputIterator first, InputIterator last, InputIterator avoid = NULL) {
+		void	add_range(InputIterator first, InputIterator last) {
     		while (first != last) {
     			this->add(*(first++));
     		}
@@ -468,8 +483,21 @@ namespace ft {
 			return (candidate);
 		}
 
+		iterator find (const key_type& k) {
+			Node *head = _root;
 
-		iterator find (const key_type& k) const {
+			while (_size && head && head != _end) {
+				if (_comp(head->_value->first, k))
+					head = head->_right;
+				else if (_comp(k, head->_value->first))
+					head = head->_left;
+				else
+					return (iterator(head));
+			}
+			return (this->end());
+		}
+
+		const_iterator find (const key_type& k) const {
 			Node *head = _root;
 
 			while (_size && head && head != _end) {
@@ -588,10 +616,10 @@ namespace ft {
 		typedef typename allocator_type::pointer pointer;
 		typedef typename allocator_type::const_pointer const_pointer;
 		typedef typename ft::BST<value_type, key_compare>::iterator iterator;
-		//typedef const_iterator	a bidirectional iterator to const value_type	
+		typedef typename ft::BST<value_type, key_compare>::const_iterator const_iterator;
 		typedef typename ft::reverse_iterator<iterator> reverse_iterator;
-		//typedef reverse_iterator<const_iterator> const_reverse_iterator;	
-		typedef typename iterator_traits<iterator>::difference_type difference_type;
+		typedef typename ft::reverse_iterator<const_iterator> const_reverse_iterator;	
+		typedef typename ft::iterator_traits<iterator>::difference_type difference_type;
 		typedef size_t size_type;
 
 
@@ -619,7 +647,6 @@ namespace ft {
 			if (this == &x)
 				return (*this);
 			_comp = x._comp;
-			_alloc = x._alloc;
 			_bst.clear();
 			_bst.add_range(x.begin(), x.end());
 			return (*this);
@@ -627,7 +654,7 @@ namespace ft {
 
 		bool empty() const { return (!_bst.size()); }
 		size_type size() const { return (_bst.size()); }
-		size_type max_size() const { return (_alloc.max_size()); }
+		size_type max_size() const { std::allocator<ft::node<T> > alloc_node; return (alloc_node.max_size()); }
 
 		pair<iterator,bool> insert (const value_type& val) {
 			return (_bst.add(val));
@@ -658,15 +685,19 @@ namespace ft {
 			_bst.clear();
 		}
 
-		iterator begin() const {return _bst.begin();}
-		//const_iterator begin() {return _bst.begin();}
+		iterator begin() {return _bst.begin();}
+		const_iterator begin() const { return const_iterator(_bst.begin());}
 
-		iterator end() const {return _bst.end();}
-		//const_iterator end() {return _bst.end();}
+		iterator end() {return _bst.end();}
+		const_iterator end() const {return const_iterator(_bst.end());}
 
 		reverse_iterator rbegin() {return reverse_iterator(_bst.end());}
 
 		reverse_iterator rend() {return reverse_iterator(_bst.begin());}
+
+		const_reverse_iterator rbegin() const {return const_reverse_iterator(_bst.end());}
+
+		const_reverse_iterator rend() const {return const_reverse_iterator(_bst.begin());}
 
 		mapped_type& operator[] (const key_type& k) {
 			iterator it = _bst.find(k);
@@ -696,11 +727,17 @@ namespace ft {
 
 		iterator find (const key_type& k) { return (_bst.find(k)); }
 
+		const_iterator find (const key_type& k) const { return (const_iterator(_bst.find(k))); }
+
 		size_type count (const key_type& k) const { return ((_bst.find(k) != this->end())); }
 
 		iterator lower_bound (const key_type& k) { return (_bst.lower_bound(k)); }
 
 		iterator upper_bound (const key_type& k) { return (_bst.upper_bound(k)); }
+
+		const_iterator lower_bound (const key_type& k) const { return (const_iterator(_bst.lower_bound(k))); }
+
+		const_iterator upper_bound (const key_type& k) const { return (const_iterator(_bst.upper_bound(k))); }
 
 		key_compare key_comp() const { return (_comp) ; }
 
@@ -717,15 +754,15 @@ namespace ft {
 			return (ft::pair<iterator,iterator>(it, ++itplus));
 		}
 
-		ft::pair< const iterator, const iterator> equal_range (const key_type& k) const {
-			iterator it = _bst.find(k);
-			iterator end = _bst.end();
+		ft::pair< const_iterator, const_iterator> equal_range (const key_type& k) const {
+			const_iterator it = _bst.find(k);
+			const_iterator end = _bst.end();
 			if (it == end) {
 				it = _bst.upper_bound(k);
-				return (ft::pair<iterator,iterator>(it, it));
+				return (ft::pair<const_iterator,const_iterator>(it, it));
 			}
-			iterator itplus = it;
-			return (ft::pair<iterator,iterator>(it, ++itplus));
+			const_iterator itplus = it;
+			return (ft::pair<const_iterator,const_iterator>(it, ++itplus));
 		}
 
 		allocator_type get_allocator() const { return (_alloc); }

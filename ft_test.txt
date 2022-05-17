@@ -1,0 +1,195 @@
+-/-/-/-/-/-/-/-/-/- début tests test_ft_map_constructeur + element access et modifiers part 1 -/-/-/-/-/-/-/-/-/-
+-----> insert de paires ee, b, d, f, aa, c
+---MAP map1 of SIZE = 6---
+aa : 45
+b : 7
+c : 18
+d : 7
+ee : 7
+f : 7
+-----> accessor[], modification de la valeur de d, de 123, de grp puis de 123
+---MAP map1 of SIZE = 8---
+123 : -13
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+-----> constructeur par copie de map2
+---MAP map2 of SIZE = 8---
+123 : -13
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+-----> erase par key de d, j et 123
+---MAP map2 of SIZE = 6---
+aa : 45
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+---MAP map1 of SIZE = 8---
+123 : -13
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+-----> constructeur par range de map3 map2.begin() a map2.end()
+---MAP map3 of SIZE = 5---
+aa : 45
+c : 18
+d : 17
+ee : 7
+f : 7
+-----> erase de range de map 3 begin to end, puis insert de range de map 1 dans map 3 begin to --end
+---MAP map3 of SIZE = 0---
+---MAP map3 of SIZE = 7---
+123 : -13
+aa : 45
+b : 7
+c : 18
+d : 17
+ee : 7
+f : 7
+-----> erase de map3 jsq --end par l'incrementation d'un iterateur (root compris)
+---MAP map3 of SIZE = 1---
+f : 7
+-----> insert dans map3 de (aa:45) deux fois et check bool retour
+1
+0
+-----> insert dans map3 de (c:18) et retention iterateur retour
+c
+---MAP map3 of SIZE = 3---
+aa : 45
+c : 18
+f : 7
+-----> erase de map1 jsq end par range (root compris)
+---MAP map1 of SIZE = 0---
+-----> Construction map<string, map> et iteration pour affichage, avec map nb 2 = map nb 3
+---MAP Map nb 1 of SIZE = 0---
+---MAP Map nb 2 of SIZE = 6---
+aa : 45
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+---MAP Map nb 3 of SIZE = 6---
+aa : 45
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+-----> modification 'Map nb 3' par accesseur []
+---MAP Map nb 1 of SIZE = 0---
+---MAP Map nb 2 of SIZE = 6---
+aa : 45
+c : 18
+d : 17
+ee : 7
+f : 7
+grp : 777
+---MAP Map nb 3 of SIZE = 3---
+aa : 45
+c : 18
+f : 7
+-/-/-/-/-/-/-/-/-/- Suite des tests modifiers -/-/-/-/-/-/-/-/-/-
+-----> construction de map 2 et swap avec map 1
+---MAP map 1 of SIZE = 3---
+aa : 45
+c : 18
+f : 7
+---MAP map 2 of SIZE = 5---
+aa : 45
+c : 18
+f : 7
+hollow : 91
+zippo : 33
+---MAP map 1 of SIZE = 5---
+aa : 45
+c : 18
+f : 7
+hollow : 91
+zippo : 33
+---MAP map 2 of SIZE = 3---
+aa : 45
+c : 18
+f : 7
+-----> iteration de l'iterateur construit à map.begin() avant le swap
+aa
+c
+f
+-----> clear de map 1 et reswap
+---MAP map 1 of SIZE = 3---
+aa : 45
+c : 18
+f : 7
+---MAP map 2 of SIZE = 0---
+-----> reclear de map 2
+---MAP map 2 of SIZE = 0---
+-----> erase dans deux maps de 'bonjour' puis insert dans 1 de c :: 17 avec retention iterator de retour
+iterateur retour pointe sur : c
+---MAP map 1 of SIZE = 3---
+aa : 45
+c : 18
+f : 7
+-----> insert avec hint
+---MAP map 1 of SIZE = 7---
+aa : 45
+azerty : 6
+bol : 41
+c : 18
+f : 7
+h : 10
+zz : 5
+-/-/-/-/-/-/-/-/-/- Test capacity and observers -/-/-/-/-/-/-/-/-/-
+-----> Map 1 est -elle vide ? Puis affichage size
+0/7
+-----> Test comparateur entre first et --end puis first et first, key_compare puis value_compare
+1
+0
+1
+0
+-----> Clear puis affichage vide? et size
+1/0
+-----> Affichage max_size
+230584300921369395
+-/-/-/-/-/-/-/-/-/- Test operations-/-/-/-/-/-/-/-/-/-
+-----> find dans map 15007 de azerty, a............, non_existant, zz, zzzz
+6
+12
+non_existant n'existe pas dans la map
+5
+zzzz n'existe pas dans la map
+-----> Memes tests avec count()
+1
+1
+0
+1
+0
+-----> Memes tests avec equal_range() et affichage lower et upper bound. affichage ensuite lower_bound() et upper_bound()
+azerty/bol
+azerty/bol
+12/13
+12/13
+zz/zz
+zz/zz
+zz/ upper_bound == end() ? 1
+zz/ upper_bound == end() ? 1
+lower_bound == end() ? 1/ upper_bound == end() ? 1
+lower_bound == end() ? 1/ upper_bound == end() ? 1
+zz
+123
+123
+242443 microsecondes

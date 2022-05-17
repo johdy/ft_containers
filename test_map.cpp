@@ -278,6 +278,13 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	map = map3;
 }
 
+void test_const(const NAMESPACE::map<std::string, int> &map) {
+	NAMESPACE::pair<std::string, int> paire3("d", 7);
+	NAMESPACE::map<std::string, int>::const_iterator cit = map.begin();
+	//while (cit != map.end())
+		std::cout << (cit)->first << std::endl;
+}
+
 int main() {
 	struct timeval	timebegin;
 	struct timeval	timeend;
@@ -292,9 +299,19 @@ int main() {
 	NAMESPACE::map<std::string, int>::reverse_iterator rit = map.rbegin();
 
 	std::cout << rit->first << std::endl;
+	map["h"] = 17;
+	map["hh"] = 17;
+	map["hhhh"] = 17;
+	map["hhhhhh"] = 17;
+	map["123"];
+	map["grp"] = 777;
+	map["123"] = -13;
 	rit = --(map.rend());
 
 	std::cout << rit->first << std::endl;
+	test_const(map);
+
+	//display_tree_beg_to_end(map, "map1");
 	//test_ft_map_modifiers_big_time(map);
 	/*std::cout << "ohh " << map.lower_bound("f")->first << std::endl;
 	std::cout << "ahh " << map.upper_bound("ee")->first << std::endl;
