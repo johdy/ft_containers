@@ -138,6 +138,10 @@ namespace ft {
 			this->_elem = other.base();
 		}
 
+		template< typename U >
+		const_random_access_iterator( const random_access_iterator<U>& other ) : _elem (other.base()){
+		}
+
 		virtual ~const_random_access_iterator() {}
 
 		const_random_access_iterator& operator= (const_random_access_iterator rhs) {

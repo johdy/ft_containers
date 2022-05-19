@@ -46,21 +46,30 @@ namespace ft {
 				size_t cpt = _size - 1;
 
 				while (position + nb_insert != end) {
-					*(begin + cpt) = *(_begin + (cpt - nb_insert));
-					--cpt;
+					*(begin + cpt) = *(_begin + cpt - nb_insert);
 					if (erase)
-						_allocator.destroy(_begin + cpt);
+						_allocator.destroy(_begin + cpt - nb_insert);
+					--cpt;
 					--end;
 				}
 				return (cpt);
 			}
 
+			pointer allocation_0(size_type n) {
+				pointer ret = _allocator.allocate(n);
+				while (n--)
+					_allocator.construct(ret + n, 0);
+				return (ret);
+			}
+
 
 		public:
-			explicit vector(const allocator_type& alloc = allocator_type()) : _allocator(alloc), _begin(0), _capacity(0), _size(0) { }
+			explicit vector(const allocator_type& alloc = allocator_type()) : _allocator(alloc), _capacity(5), _size(0) {
+				_begin = allocation_0(5);
+			}
 			explicit vector(size_t n, const value_type& val = T(), const allocator_type& alloc = allocator_type()) :
 				_allocator(alloc), _begin(0), _capacity(n), _size(n) {
-					_begin = _allocator.allocate(n);
+					_begin = allocation_0(n);
 					while (n--) {
 						_allocator.construct(_begin + n, val);
 					}
@@ -71,25 +80,26 @@ namespace ft {
 				_capacity = size;
 				_size = size;
 				_allocator = alloc;
-				_begin = _allocator.allocate(size);
+				_begin = allocation_0(size);
 				while (size--)
 					_allocator.construct(_begin + size, *(first + size));
 			}
 
 			vector & operator=(const vector & rhs) {
+				this->clear();
 				_capacity = rhs._capacity;
 				_size = rhs._size;
 				_allocator = rhs._allocator;
 
 				size_type size = _capacity;
-				_begin = _allocator.allocate(size);
+				_begin = allocation_0(size);
 				while (size--) {
 					_allocator.construct(_begin + size, rhs._begin[size]);
 				}
 				return (*this);
 			}
 
-			vector(const vector& x) {
+			vector(const vector& x) : _size(0) {
 				*this = x;
 			}
 
@@ -115,11 +125,13 @@ namespace ft {
 			size_type capacity() const { return ( _capacity ); }
 
 			void resize (size_type n, value_type val = value_type()) {
-				while ( n < _size )
+				while ( n < _size ) {
 					_allocator.destroy(_begin + --_size);
+				}
 				if ( n > _capacity ) {
 					reserve((n > _capacity * 2) ? n : _capacity * 2);
 				}
+				else
 				while ( n > _size )
 					_allocator.construct(_begin + _size++, val);
 			}
@@ -133,7 +145,7 @@ namespace ft {
 					pointer new_begin;
 					size_type cpt = 0;
 
-					new_begin = _allocator.allocate(n);
+					new_begin = allocation_0(n);
 					while (cpt < _size) {
 						_allocator.construct(new_begin + cpt, _begin[cpt]);
 						_allocator.destroy(_begin + cpt);
@@ -208,7 +220,7 @@ namespace ft {
 				size_t loc;
 
 				if (_size++ == _capacity) {
-					new_begin = _allocator.allocate(_capacity);
+					new_begin = allocation_0(_capacity);
 					loc = copy_end(position, new_begin, 1, 1);
 					copy_up_until(position, new_begin);
 					_capacity = _capacity * 2;
@@ -226,7 +238,7 @@ namespace ft {
 				_size += n;
 				if (_size > _capacity) {
 					_capacity = (_size > _capacity * 2) ? _size : _capacity * 2;
-					new_begin = _allocator.allocate(_capacity);
+					new_begin = allocation_0(_capacity);
 					loc = copy_end(position, new_begin, n, 1);
 					copy_up_until(position, new_begin);
 				}
@@ -244,7 +256,7 @@ namespace ft {
 				_size += last - first;
 				if (_size > _capacity) {
 					_capacity = (_size > _capacity * 2) ? _size : _capacity * 2;
-					new_begin = _allocator.allocate(_capacity);
+					new_begin = allocation_0(_capacity);
 					loc = copy_end(position, new_begin, last - first, 1);
 					copy_up_until(position, new_begin);
 				}
