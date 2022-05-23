@@ -30,7 +30,6 @@ namespace ft {
 
 			void copy_up_until(iterator position, pointer &new_begin) {
 				iterator it(this->begin());
-				size_type cpt = 0;
 
 				while (it != position) {
 					--position;
@@ -46,7 +45,7 @@ namespace ft {
 				size_t cpt = _size - 1;
 
 				while (position + nb_insert != end) {
-					*(begin + cpt) = *(_begin + cpt - nb_insert);
+					_allocator.construct(begin + cpt, *(_begin + cpt - nb_insert));
 					if (erase)
 						_allocator.destroy(_begin + cpt - nb_insert);
 					--cpt;
@@ -57,18 +56,18 @@ namespace ft {
 
 			pointer allocation_0(size_type n) {
 				pointer ret = _allocator.allocate(n);
-				while (n--)
-					_allocator.construct(ret + n, 0);
+				//while (n--)
+				//	_allocator.construct(ret + n, new value_type);
 				return (ret);
 			}
 
 
 		public:
-			explicit vector(const allocator_type& alloc = allocator_type()) : _allocator(alloc), _capacity(0), _size(0), _begin(0) {
+			explicit vector(const allocator_type& alloc = allocator_type()) : _begin(0), _capacity(0), _size(0), _allocator(alloc) {
 			}
 
 			explicit vector(size_t n, const value_type& val = T(), const allocator_type& alloc = allocator_type()) :
-				_allocator(alloc), _begin(0), _capacity(n), _size(n) {
+				_begin(0), _capacity(n), _size(n), _allocator(alloc) {
 					if (!n)
 						return ;
 					_begin = allocation_0(n);
@@ -115,8 +114,8 @@ namespace ft {
 					return ;
 				//std::cout << _begin << "/ capacity : " << _capacity << std::endl;
 				size_type cap_tmp = _capacity;
-				while (_capacity)
-					_allocator.destroy(_begin + --_capacity);
+				while (_size)
+					_allocator.destroy(_begin + --_size);
 				_size = 0;
 				_allocator.deallocate(_begin, cap_tmp);
 			}
@@ -140,7 +139,7 @@ namespace ft {
 			void resize (size_type n, value_type val = value_type()) {
 				while ( n < _size ) {
 					_allocator.destroy(_begin + --_size);
-					_allocator.construct(_begin + _size, 0);
+					//_allocator.construct(_begin + _size, value_type());
 				}
 				if ( n > _capacity ) {
 					reserve((n > _capacity * 2) ? n : _capacity * 2);
@@ -194,7 +193,7 @@ namespace ft {
 			void clear() {
 				while (_size) {
 					_allocator.destroy(_begin + --_size);
-					_allocator.construct(_begin + _size, 0);
+					//_allocator.construct(_begin + _size, value_type());
 				}
 			}
 
@@ -231,7 +230,7 @@ namespace ft {
 
 			void pop_back() {
 				_allocator.destroy(_begin + --_size);
-				_allocator.construct(_begin + _size, 0);
+				//_allocator.construct(_begin + _size, value_type());
 			}
 
 			iterator insert (iterator position, const value_type& val) {
@@ -265,7 +264,7 @@ namespace ft {
 				else
 					loc = copy_end(position, _begin, n);
 				while (n)
-					*(_begin + loc - --n) = val;
+					_allocator.construct(_begin + loc - --n, val);
 			}
 
 			template <class InputIterator>
@@ -293,10 +292,12 @@ namespace ft {
 
     			if (position == vec_end)
     				return (position);
-    			while (++head != vec_end)
+    			while (++head != vec_end) {
+    				_allocator.destroy(head.base() - 1);
     				*(head - 1) = *head;
+    			}
     			_allocator.destroy(_begin + --_size);
-    			_allocator.construct(_begin + _size);
+    			//_allocator.construct(_begin + _size, value_type());
     			return (position);
     		}
 
@@ -307,6 +308,7 @@ namespace ft {
     			if (first == vec_end)
     				return (first);
     			while ((last + i) != vec_end) {
+    				_allocator.destroy(first.base() + i);
     				*(first + i) = *(last + i);
     				++i;
     			}
