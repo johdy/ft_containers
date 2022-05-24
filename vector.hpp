@@ -250,7 +250,6 @@ namespace ft {
 			}
 
 			void insert (iterator position, size_type n, const value_type& val) {
-				std::cout << "in" << std::endl;
 				pointer new_begin;
 				size_t loc;
 
@@ -282,7 +281,8 @@ namespace ft {
 				else
 					loc = copy_end(position, _begin, last - first);
 				while (last - first) {
-					*(_begin + loc - (last - ++first)) = *first;
+					_allocator.construct(_begin + loc - (last - first) + 1, *first);
+					++first;
 				}
     		}
 

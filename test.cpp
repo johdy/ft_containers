@@ -331,6 +331,22 @@ void test_ft_stack(NAMESPACE::stack<int, NAMESPACE::vector<int> > &stak) {
 	std::cout << (stak4 < stak) << std::endl;
 }
 
+void test_insert_range(NAMESPACE::vector<int> &vec) {
+	std::cout << "---------------------- Tests vector_insert_range ----------------------" << std::endl;
+	NAMESPACE::vector<int> vec2(vec.begin() + 21, vec.begin() + 26);
+	vec.resize(10);
+	display_vector(vec);
+	std::cout << "-separation---VEC1 VECÉ------" << std::endl;
+	display_vector(vec2);
+	vec.insert(vec.begin() + 1, vec2.begin(), vec2.end());
+	std::cout << "-apres insert------" << std::endl;
+	vec.insert(vec.begin() + 10, vec2.begin() + 2, vec2.end() - 1);
+	vec.insert(vec.begin(), vec.begin() + 2, vec.end() - 1);
+	vec.insert(vec.end() - 1, vec2.begin() + 2, vec2.end() - 1);
+	display_vector(vec);
+
+}
+
 int main() {
 	struct timeval	timebegin;
 	struct timeval	timeend;
@@ -344,7 +360,8 @@ int main() {
 	test_ft_vector_modifiers(vec);
 	test_ft_vector_non_member_function_overloads(vec);
 	NAMESPACE::stack<int, NAMESPACE::vector<int> > stak(vec);
-	test_ft_stack(stak);
+	test_insert_range(vec);
+	//test_ft_stack(stak);
 	gettimeofday(&timeend, NULL);
 	std::cout << (timeend.tv_sec - timebegin.tv_sec)
 			* 1000000 + (timeend.tv_usec - timebegin.tv_usec) << " microsecondes" << std::endl;
