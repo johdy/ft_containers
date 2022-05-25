@@ -222,7 +222,7 @@ namespace ft {
 
 			void push_back (const value_type& val) {
 				if (!_begin)
-					this->reserve(2);
+					this->reserve(1);
 				else if (_size == _capacity)
 					this->reserve(_size * 2);
 				_allocator.construct(_begin + _size++, val);
