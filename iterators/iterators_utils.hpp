@@ -22,8 +22,8 @@ namespace ft {
 	struct const_iterator {
 		typedef T				value_type;
 		typedef Distance		difference_type;
-		typedef const Pointer	pointer;
-		typedef const Reference	reference;
+		typedef Pointer	pointer;
+		typedef Reference	reference;
 		typedef Category		iterator_category;
  	};
 

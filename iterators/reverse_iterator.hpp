@@ -60,7 +60,7 @@ namespace ft {
 			return (&(operator*()));
 		}
 
-		reference operator[] (difference_type n) const { return ( *this + n ); }
+		reference operator[] (difference_type n) const { return ( *(*this + n) ); }
 
 		bool operator== (const reverse_iterator& rhs) { return (_elem == rhs.base()); }
 

@@ -511,6 +511,38 @@ namespace ft {
 			return (this->end());
 		}
 
+		const_iterator lower_bound (const key_type& k) const {
+			Node *head = _root;
+			const_iterator candidate = this->end();
+
+			while (_size && head && head != _end) {
+				if (!_comp(head->_value->first, k))
+					candidate = head;
+				if (_comp(k, head->_value->first))
+					head = head->_left;
+				else if (_comp(head->_value->first, k))
+					head = head->_right;
+				else
+					return (candidate);
+			}
+			return (candidate);
+		}
+
+		const_iterator upper_bound (const key_type& k) const {
+			Node *head = _root;
+			const_iterator candidate = this->end();
+
+			while (_size && head && head != _end) {
+				if (_comp(k, head->_value->first))
+					candidate = head;
+				if (_comp(k, head->_value->first))
+					head = head->_left;
+				else
+					head = head->_right;
+			}
+			return (candidate);
+		}
+
 		void destroy_node(Node *suppr_node) {
 			_value_alloc.destroy(suppr_node->_value);
 			_value_alloc.deallocate(suppr_node->_value, 1);
@@ -747,7 +779,7 @@ namespace ft {
 			iterator it = _bst.find(k);
 			iterator end = _bst.end();
 			if (it == end) {
-				it = _bst.upper_bound(k);
+				it = this->upper_bound(k);
 				return (ft::pair<iterator,iterator>(it, it));
 			}
 			iterator itplus = it;
@@ -758,7 +790,7 @@ namespace ft {
 			const_iterator it = _bst.find(k);
 			const_iterator end = _bst.end();
 			if (it == end) {
-				it = _bst.upper_bound(k);
+				it = this->upper_bound(k);
 				return (ft::pair<const_iterator,const_iterator>(it, it));
 			}
 			const_iterator itplus = it;
