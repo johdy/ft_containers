@@ -253,6 +253,8 @@ namespace ft {
 				pointer new_begin;
 				size_t loc;
 
+				if (n == 0)
+					return ;
 				_size += n;
 				if (_size > _capacity) {
 					_capacity = (_size > _capacity * 2) ? _size : _capacity * 2;
