@@ -76,36 +76,44 @@ namespace ft {
 					}
 			}
 			template <class InputIterator>
-			vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type = NULL) {
-				size_type size = last - first;
-				_capacity = size;
-				_size = size;
+			vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type = 0) {
+				_size = ft::distance<InputIterator>(last, first);
+				_capacity = _size;
 				_allocator = alloc;
 				if (!_size)
 					return ;
-				_begin = allocation_0(size);
-				while (size--)
-					_allocator.construct(_begin + size, *(first + size));
+				_begin = allocation_0(_size);
+				size_type cpt = 0;
+				while (cpt < _size) {
+					_allocator.construct(_begin + cpt, *(first++));
+					++cpt;
+				}
 			}
 
 			vector & operator=(const vector & rhs) {
 				if (*this == rhs)
 					return (*this);
+				//size_type captmp = _capacity;
+
 				this->clear();
+				if (_capacity < rhs._capacity)
+					this->reserve(rhs._capacity);
 				_capacity = rhs._capacity;
 				_size = rhs._size;
 				_allocator = rhs._allocator;
 
 				size_type size = _size;
-				if (_capacity)
-					_begin = allocation_0(_capacity);
+				//if (_capacity) {
+				//	//_allocator.deallocate(_begin, captmp);
+			//		_begin = allocation_0(_capacity);
+			//	}
 				while (size--) {
 					_allocator.construct(_begin + size, rhs._begin[size]);
 				}
 				return (*this);
 			}
 
-			vector(const vector& x) : _size(0) {
+			vector(const vector& x) : _capacity(0), _size(0){
 				*this = x;
 			}
 
@@ -121,10 +129,10 @@ namespace ft {
 			}
 
 			iterator begin() { return (_begin); }
-			const iterator begin() const { return (_begin); }
+			const_iterator begin() const { return (_begin); }
 
 			iterator end() { return (_begin + _size); }
-			const iterator end() const { return (_begin + _size); }
+			const_iterator end() const { return (_begin + _size); }
 
 			reverse_iterator rbegin() { return ( reverse_iterator(end())); }
 			const_reverse_iterator rbegin() const { return (reverse_iterator(end())); }
@@ -142,7 +150,7 @@ namespace ft {
 					//_allocator.construct(_begin + _size, value_type());
 				}
 				if ( n > _capacity ) {
-					reserve((n > _capacity * 2) ? n : _capacity * 2);
+					reserve((n > _size * 2) ? n : _size * 2);
 				}
 				while ( n > _size )
 					_allocator.construct(_begin + _size++, val);
@@ -154,6 +162,8 @@ namespace ft {
 			void reserve (size_type n) {
 					if (n <= _capacity)
 						return ;
+					if (n > this->max_size())
+						throw (std::length_error("vector::reserve"));
 					pointer new_begin;
 					size_type cpt = 0;
 
@@ -163,7 +173,7 @@ namespace ft {
 						_allocator.destroy(_begin + cpt);
 						++cpt;
 					}
-					if (_begin)
+					if (_capacity && _begin)
 						_allocator.deallocate(_begin, _capacity);
 					_begin = new_begin;
 					_capacity = n;
@@ -198,13 +208,14 @@ namespace ft {
 			}
 
 			template <class InputIterator>
-			void assign (InputIterator first, InputIterator last, typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type = NULL) {
+			void assign (InputIterator first, InputIterator last, typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type = 0) {
 				this->clear();
-				this->reserve(last - first);
-				_size = last - first;
+				size_t dist = ft::distance<InputIterator>(last, first);
+				this->reserve(dist);
+				_size = dist;
 				size_t cpt = 0;
 				while (cpt < _size) {
-					_allocator.construct(_begin + cpt, *(first + cpt));
+					_allocator.construct(_begin + cpt, *(first++));
 					cpt++;
 				}
 			}
@@ -245,19 +256,20 @@ namespace ft {
 				}
 				else
 					loc = copy_end(position, _begin, 1);
-				*(_begin + loc) = val;
+				_allocator.construct(_begin + loc, val);
 				return (this->begin() + loc);
 			}
 
 			void insert (iterator position, size_type n, const value_type& val) {
 				pointer new_begin;
 				size_t loc;
+				size_t old_size = _size;
 
 				if (n == 0)
 					return ;
 				_size += n;
 				if (_size > _capacity) {
-					_capacity = (_size > _capacity * 2) ? _size : _capacity * 2;
+					_capacity = (_size > old_size * 2) ? _size : old_size * 2;
 					new_begin = allocation_0(_capacity);
 					loc = copy_end(position, new_begin, n, 1);
 					copy_up_until(position, new_begin);
@@ -269,24 +281,27 @@ namespace ft {
 			}
 
 			template <class InputIterator>
-    		void insert (iterator position, InputIterator first, InputIterator last, typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type = NULL) {
+    		void insert (iterator position, InputIterator first, InputIterator last,
+    					typename ft::enable_if< !ft::is_integral<InputIterator>::value, InputIterator>::type = 0) {
 				pointer new_begin;
 				size_t loc;
-
-				if (last - first == 0)
+				size_t old_size = _size;
+				size_t dist = ft::distance<InputIterator>(last, first);
+				if (dist == 0)
 					return ;
-				_size += last - first;
+				_size += dist;
 				if (_size > _capacity) {
-					_capacity = (_size > _capacity * 2) ? _size : _capacity * 2;
+					_capacity = (_size > old_size * 2) ? _size : old_size * 2;
 					new_begin = allocation_0(_capacity);
-					loc = copy_end(position, new_begin, last - first, 1);
+					loc = copy_end(position, new_begin, dist, 1);
 					copy_up_until(position, new_begin);
 				}
 				else
-					loc = copy_end(position, _begin, last - first);
-				while (last - first) {
-					_allocator.construct(_begin + loc - (last - first) + 1, *first);
+					loc = copy_end(position, _begin, dist);
+				while (dist) {
+					_allocator.construct(_begin + loc - dist + 1, *first);
 					++first;
+					--dist;
 				}
     		}
 
@@ -297,8 +312,8 @@ namespace ft {
     			if (position == vec_end)
     				return (position);
     			while (++head != vec_end) {
-    				_allocator.destroy(head.base() - 1);
-    				*(head - 1) = *head;
+    				_allocator.destroy(&(*head) - 1);
+    				_allocator.construct(&(*head) - 1, *head);
     			}
     			_allocator.destroy(_begin + --_size);
     			//_allocator.construct(_begin + _size, value_type());
@@ -312,8 +327,8 @@ namespace ft {
     			if (first == vec_end)
     				return (first);
     			while ((last + i) != vec_end) {
-    				_allocator.destroy(first.base() + i);
-    				*(first + i) = *(last + i);
+    				_allocator.destroy(&(*first) + i);
+    				_allocator.construct(&(*first) + i, *(last + i));
     				++i;
     			}
     			this->resize(_size - (last - first));

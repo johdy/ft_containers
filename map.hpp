@@ -71,8 +71,9 @@ namespace ft {
     	}
 
     	~BST() {
-    		if (_root)
+    		if (_root) {
     			suppress_BST(_root);
+    		}
 			_value_alloc.deallocate(_end->_value, 1);
     		_node_alloc.destroy(_end);
 			_node_alloc.deallocate(_end, 1);
@@ -92,8 +93,9 @@ namespace ft {
 		}
 
     	void clear() {
-    		if (_root)
+    		if (_root) {
     			suppress_BST(_root);
+    		}
 			_value_alloc.deallocate(_end->_value, 1);
 			_node_alloc.destroy(_end);
 			_node_alloc.deallocate(_end, 1);
@@ -805,7 +807,56 @@ namespace ft {
 		ft::BST<value_type, key_compare>	_bst;
 	};
 
+	template < class Key, class T, class Compare, class Alloc >
+	void swap (ft::map<Key,T,Compare,Alloc>& x, ft::map<Key,T,Compare,Alloc>& y) {
+		x.swap(y);
+	}
 
+	template < class Key, class T, class Compare, class Alloc >
+	bool operator== (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		if (lhs.size() != rhs.size())
+			return (false);
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator left_it = lhs.begin();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator right_it = rhs.begin();
+		while (left_it != lhs.end() && *left_it == *right_it) {
+			++left_it;
+			++right_it;
+		}
+		return (left_it == lhs.end());
+	}
+
+	template < class Key, class T, class Compare, class Alloc >
+	bool operator< (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator left_it = lhs.begin();
+		typename ft::map<Key,T,Compare,Alloc>::const_iterator right_it = rhs.begin();
+		while (left_it != lhs.end()) {
+			if (right_it == rhs.end() || (*right_it < *left_it))
+				return (false);
+			else if (*(left_it++) < *(right_it++))
+				return (true);
+		}
+		return (lhs.size() != rhs.size());
+	}
+
+	template < class Key, class T, class Compare, class Alloc >
+	bool operator!= (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		return (!(lhs == rhs));
+	}
+
+	template < class Key, class T, class Compare, class Alloc >
+	bool operator> (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		return ((rhs < lhs));
+	}
+
+	template < class Key, class T, class Compare, class Alloc >
+	bool operator<= (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		return (!(lhs > rhs));
+	}
+
+	template < class Key, class T, class Compare, class Alloc >
+	bool operator>= (const ft::map<Key,T,Compare,Alloc>& lhs, const ft::map<Key,T,Compare,Alloc>& rhs ) {
+		return (!(lhs < rhs));
+	}
 }
 
 #endif

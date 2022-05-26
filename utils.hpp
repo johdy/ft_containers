@@ -1,8 +1,29 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
 # include <iostream>
+# include "iterators_utils.hpp"
 
 namespace ft {
+
+	/*template<class T>
+
+	template<>
+	struct is_iterator_valid_c<typename ft::random_access_iterator_tag>{
+		static const bool value = true;
+	};
+
+	template<class T>
+	struct is_iterator_valid : is_iterator_valid_c<T> {};*/
+
+	template<class InputIterator>
+	size_t distance(InputIterator last, InputIterator first) {
+		size_t size = 0;
+		while (last != first) {
+			++first;
+			++size;
+		}
+		return (size);
+	}
 
 	template<class Pointer>
 	Pointer leftest_from(Pointer it) {
@@ -34,14 +55,14 @@ namespace ft {
 
 	template <bool B, class T>
 	struct enable_if_c {
-	  typedef T type;
+	  typedef int type;
 	};
 
 	template <class T>
 	struct enable_if_c<false, T> {};
 
-	template <bool c, class T> 
-	struct enable_if : public enable_if_c<c, T> {};
+	template <bool B, class T> 
+	struct enable_if : public enable_if_c<B, T> {};
 
 	template <class T>
 	struct is_integral_c {
