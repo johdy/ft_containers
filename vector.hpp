@@ -54,14 +54,6 @@ namespace ft {
 				return (cpt);
 			}
 
-			pointer allocation_0(size_type n) {
-				pointer ret = _allocator.allocate(n);
-				//while (n--)
-				//	_allocator.construct(ret + n, new value_type);
-				return (ret);
-			}
-
-
 		public:
 			explicit vector(const allocator_type& alloc = allocator_type()) : _begin(0), _capacity(0), _size(0), _allocator(alloc) {
 			}
@@ -70,7 +62,7 @@ namespace ft {
 				_begin(0), _capacity(n), _size(n), _allocator(alloc) {
 					if (!n)
 						return ;
-					_begin = allocation_0(n);
+					_begin = _allocator.allocate(n);
 					while (n--) {
 						_allocator.construct(_begin + n, val);
 					}
@@ -82,7 +74,7 @@ namespace ft {
 				_allocator = alloc;
 				if (!_size)
 					return ;
-				_begin = allocation_0(_size);
+				_begin = _allocator.allocate(_size);
 				size_type cpt = 0;
 				while (cpt < _size) {
 					_allocator.construct(_begin + cpt, *(first++));
@@ -93,7 +85,6 @@ namespace ft {
 			vector & operator=(const vector & rhs) {
 				if (*this == rhs)
 					return (*this);
-				//size_type captmp = _capacity;
 
 				this->clear();
 				if (_capacity < rhs._capacity)
@@ -103,10 +94,6 @@ namespace ft {
 				_allocator = rhs._allocator;
 
 				size_type size = _size;
-				//if (_capacity) {
-				//	//_allocator.deallocate(_begin, captmp);
-			//		_begin = allocation_0(_capacity);
-			//	}
 				while (size--) {
 					_allocator.construct(_begin + size, rhs._begin[size]);
 				}
@@ -120,7 +107,6 @@ namespace ft {
 			~vector() {
 				if (!_begin)
 					return ;
-				//std::cout << _begin << "/ capacity : " << _capacity << std::endl;
 				size_type cap_tmp = _capacity;
 				while (_size)
 					_allocator.destroy(_begin + --_size);
@@ -145,10 +131,8 @@ namespace ft {
 			size_type capacity() const { return ( _capacity ); }
 
 			void resize (size_type n, value_type val = value_type()) {
-				while ( n < _size ) {
+				while ( n < _size )
 					_allocator.destroy(_begin + --_size);
-					//_allocator.construct(_begin + _size, value_type());
-				}
 				if ( n > _capacity ) {
 					reserve((n > _size * 2) ? n : _size * 2);
 				}
@@ -167,7 +151,7 @@ namespace ft {
 					pointer new_begin;
 					size_type cpt = 0;
 
-					new_begin = allocation_0(n);
+					new_begin = _allocator.allocate(n);
 					while (cpt < _size) {
 						_allocator.construct(new_begin + cpt, _begin[cpt]);
 						_allocator.destroy(_begin + cpt);
@@ -201,10 +185,8 @@ namespace ft {
 			const_reference back() const { return at(_size - 1); }
 
 			void clear() {
-				while (_size) {
+				while (_size)
 					_allocator.destroy(_begin + --_size);
-					//_allocator.construct(_begin + _size, value_type());
-				}
 			}
 
 			template <class InputIterator>
@@ -232,7 +214,7 @@ namespace ft {
 			}
 
 			void push_back (const value_type& val) {
-				if (!_begin)
+				if (!_capacity)
 					this->reserve(1);
 				else if (_size == _capacity)
 					this->reserve(_size * 2);
@@ -241,7 +223,6 @@ namespace ft {
 
 			void pop_back() {
 				_allocator.destroy(_begin + --_size);
-				//_allocator.construct(_begin + _size, value_type());
 			}
 
 			iterator insert (iterator position, const value_type& val) {
@@ -249,7 +230,7 @@ namespace ft {
 				size_t loc;
 
 				if (_size++ == _capacity) {
-					new_begin = allocation_0(_capacity * 2);
+					new_begin = _allocator.allocate(_capacity * 2);
 					loc = copy_end(position, new_begin, 1, 1);
 					copy_up_until(position, new_begin);
 					_capacity = _capacity * 2;
@@ -270,7 +251,7 @@ namespace ft {
 				_size += n;
 				if (_size > _capacity) {
 					_capacity = (_size > old_size * 2) ? _size : old_size * 2;
-					new_begin = allocation_0(_capacity);
+					new_begin = _allocator.allocate(_capacity);
 					loc = copy_end(position, new_begin, n, 1);
 					copy_up_until(position, new_begin);
 				}
@@ -292,7 +273,7 @@ namespace ft {
 				_size += dist;
 				if (_size > _capacity) {
 					_capacity = (_size > old_size * 2) ? _size : old_size * 2;
-					new_begin = allocation_0(_capacity);
+					new_begin = _allocator.allocate(_capacity);
 					loc = copy_end(position, new_begin, dist, 1);
 					copy_up_until(position, new_begin);
 				}
@@ -316,7 +297,6 @@ namespace ft {
     				_allocator.construct(&(*head) - 1, *head);
     			}
     			_allocator.destroy(_begin + --_size);
-    			//_allocator.construct(_begin + _size, value_type());
     			return (position);
     		}
 

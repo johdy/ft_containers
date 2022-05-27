@@ -9,7 +9,6 @@ namespace ft {
 
 			typedef  T1 first_type;
 			typedef  T2 second_type;
-			//constructeurs (defaut, initialisation, copie)
 			pair() : first(T1()) , second(T2()) { }
 			pair(const T1& x, const T2& y) : first(x) , second(y) { }
 			template<class U, class V>
@@ -24,7 +23,6 @@ namespace ft {
 				return (*this);
 			}
 	};
-
 
 	template <class T1, class T2>
 	bool operator== (const pair<T1,T2>& lhs, const pair<T1,T2>& rhs) {
@@ -57,8 +55,8 @@ namespace ft {
 	}
 
 	template<class T1,class T2>
-	pair<T1,T2> make_pair(T1 x,T2 y) {
-		return (pair<T1,T2>(x,y));
+	ft::pair<T1,T2> make_pair(T1 x,T2 y) {
+		return (ft::pair<T1,T2>(x,y));
 	}
 }
 

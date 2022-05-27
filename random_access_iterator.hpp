@@ -241,24 +241,6 @@ namespace ft {
 	template <typename T>
 	bool operator>= (const const_random_access_iterator<T> lhs, const random_access_iterator<T> rhs) { return (&(*lhs) >= &(*rhs)); }
 
-	/*template <typename TL, typename TR>
-	bool operator== (const const_random_access_iterator<TL> lhs, const const_random_access_iterator<TR> rhs) { return (&(*lhs) == &(*rhs)); }
-
-	template <typename TL, typename TR>
-	bool operator!= (const const_random_access_iterator<TL> lhs, const const_random_access_iterator<TR> rhs) { return (&(*lhs) != &(*rhs)); }
-
-	template <typename TL, typename TR>
-	bool operator<  (const const_random_access_iterator<TL> lhs, const const_random_access_iterator<TR> rhs) { return (&(*lhs) < &(*rhs)); }
-
-	template <typename TL, typename TR>
-	bool operator<= (const const_random_access_iterator<TL> lhs, const const_random_access_iterator<TR> rhs) { return (&(*lhs) <= &(*rhs)); }
-
-	template <typename TL, typename TR>
-	bool operator>  (const const_random_access_iterator<TL> lhs, const const_random_access_iterator<TR> rhs) { return (&(*lhs) > &(*rhs)); }
-
-	template <typename TL, typename TR>
-	bool operator>= (const const_random_access_iterator<TL> lhs, const const_random_access_iterator<TR> rhs) { return (&(*lhs) >= &(*rhs)); }*/
-
 	template <class T>
 	const_random_access_iterator<T> operator+ (typename const_random_access_iterator<T>::difference_type n, const const_random_access_iterator<T>& it) { return (it + n); }
 	template <class T>

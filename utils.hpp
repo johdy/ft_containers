@@ -5,16 +5,6 @@
 
 namespace ft {
 
-	/*template<class T>
-
-	template<>
-	struct is_iterator_valid_c<typename ft::random_access_iterator_tag>{
-		static const bool value = true;
-	};
-
-	template<class T>
-	struct is_iterator_valid : is_iterator_valid_c<T> {};*/
-
 	template<class InputIterator>
 	size_t distance(InputIterator last, InputIterator first) {
 		size_t size = 0;

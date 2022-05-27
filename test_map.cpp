@@ -203,14 +203,13 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	NAMESPACE::pair<std::string, int> paire3("d", 7);
 	NAMESPACE::pair<std::string, int> paire4("f", 7);
 	NAMESPACE::pair<std::string, int> paire5(aa, 45);
-	NAMESPACE::pair<std::string, int> paire6("c", 18);
 	std::cout << "-----> insert de paires ee, b, d, f, aa, c" <<std::endl;
 	map.insert(paire1);
 	map.insert(paire2);
 	map.insert(paire3);
 	map.insert(paire4);
 	map.insert(paire5);
-	map.insert(paire6);
+	map.insert(NAMESPACE::make_pair<std::string, int>("c", 18));
 	display_tree_beg_to_end(map, "map1");
 	std::cout << "-----> accessor[], modification de la valeur de d, de 123, de grp puis de 123" <<std::endl;
 	map["d"] = 17;
@@ -247,7 +246,7 @@ void test_ft_map_constructeur(NAMESPACE::map<std::string, int> &map) {
 	std::cout << map3.insert(paire5).second << std::endl;
 	std::cout << map3.insert(paire5).second << std::endl;
 	std::cout << "-----> insert dans map3 de (c:18) et retention iterateur retour" <<std::endl;
-	it = map3.insert(paire6).first;
+	it = map3.insert(NAMESPACE::make_pair<std::string, int>("c", 18)).first;
 	std::cout << it->first << std::endl;
 	display_tree_beg_to_end(map3, "map3");
 	std::cout << "-----> erase de map1 jsq end par range (root compris)" <<std::endl;

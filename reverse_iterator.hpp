@@ -26,7 +26,6 @@ namespace ft {
 			this->_elem = other.base();
 		}
 
-
 		iterator_type base() const { return (_elem); }
 		reference operator*() const {
 			iterator_type cpy = _elem;
@@ -62,23 +61,44 @@ namespace ft {
 
 		reference operator[] (difference_type n) const { return ( *(*this + n) ); }
 
-		bool operator== (const reverse_iterator& rhs) { return (_elem == rhs.base()); }
-
-		bool operator!= (const reverse_iterator& rhs) { return (_elem != rhs.base()); }
-
-		bool operator<  (const reverse_iterator& rhs) { return (_elem > rhs.base()); }
-
-		bool operator<= (const reverse_iterator& rhs) { return (_elem >= rhs.base()); }
-
-		bool operator>  (const reverse_iterator& rhs) { return (_elem < rhs.base()); }
-
-		bool operator>= (const reverse_iterator& rhs) { return (_elem <= rhs.base()); }
 	};
+
+	template<class Iterator>
+	bool operator== (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) { return (lhs.base() == rhs.base()); }
+	template<class IL, class IR>
+	bool operator== (const reverse_iterator<IL>& lhs, const reverse_iterator<IR>& rhs) { return (lhs.base() == rhs.base()); }
+
+	template<class Iterator>
+	bool operator!= (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) { return (lhs.base() != rhs.base()); }
+	template<class IL, class IR>
+	bool operator!= (const reverse_iterator<IL>& lhs, const reverse_iterator<IR>& rhs) { return (lhs.base() != rhs.base()); }
+
+	template<class Iterator>
+	bool operator<(const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) { return (lhs.base() > rhs.base()); }
+	template<class IL, class IR>
+	bool operator< (const reverse_iterator<IL>& lhs, const reverse_iterator<IR>& rhs) { return (lhs.base() > rhs.base()); }
+
+	template<class Iterator>
+	bool operator> (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) { return (lhs.base() < rhs.base()); }
+	template<class IL, class IR>
+	bool operator> (const reverse_iterator<IL>& lhs, const reverse_iterator<IR>& rhs) { return (lhs.base() < rhs.base()); }
+
+	template<class Iterator>
+	bool operator>= (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) { return (lhs.base() <= rhs.base()); }
+	template<class IL, class IR>
+	bool operator>= (const reverse_iterator<IL>& lhs, const reverse_iterator<IR>& rhs) { return (lhs.base() <= rhs.base()); }
+
+	template<class Iterator>
+	bool operator<= (const reverse_iterator<Iterator>& lhs, const reverse_iterator<Iterator>& rhs) { return (lhs.base() >= rhs.base()); }
+	template<class IL, class IR>
+	bool operator<= (const reverse_iterator<IL>& lhs, const reverse_iterator<IR>& rhs) { return (lhs.base() >= rhs.base()); }
 
 	template <class Iterator>
 	reverse_iterator<Iterator> operator+ (typename reverse_iterator<Iterator>::difference_type n, const reverse_iterator<Iterator>& rev_it) { return (rev_it + n); }
 	template <class Iterator>
 	typename reverse_iterator<Iterator>::difference_type operator- (const reverse_iterator<Iterator>& rev_it, const reverse_iterator<Iterator>& rev_it2) { return (rev_it2.base() - rev_it.base()); }
+	template <class IL, class IR>
+	typename reverse_iterator<IL>::difference_type operator- (const reverse_iterator<IL>& rev_it, const reverse_iterator<IR>& rev_it2) { return (rev_it2.base() - rev_it.base()); }
 
 	template <typename Iterator>
 	std::ostream &operator<< (std::ostream& os, const reverse_iterator<Iterator> lhs) {

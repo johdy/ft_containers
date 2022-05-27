@@ -6,7 +6,7 @@
 namespace ft {
 	//class const_bst_iterator;
 
-	template <typename  T, typename U >
+	template <typename T, typename U >
 	class const_bst_iterator;
 
 	template< typename T, typename U>
