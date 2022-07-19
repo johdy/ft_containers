@@ -100,11 +100,6 @@ namespace ft {
 	template <class IL, class IR>
 	typename reverse_iterator<IL>::difference_type operator- (const reverse_iterator<IL>& rev_it, const reverse_iterator<IR>& rev_it2) { return (rev_it2.base() - rev_it.base()); }
 
-	template <typename Iterator>
-	std::ostream &operator<< (std::ostream& os, const reverse_iterator<Iterator> lhs) {
-		os << lhs.base();
-		return (os);
-	}
 }
 
 #endif

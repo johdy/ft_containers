@@ -13,7 +13,7 @@ namespace ft {
 		container_type ct;
 
 	public:
-		explicit stack (const container_type& ctnr = container_type()) : ct(ctnr) {}
+		explicit stack (const container_type& ctnr = container_type()) : ct(ctnr) { }
 
 		bool empty() const { return (ct.empty()); }
 		size_type size() const { return (ct.size()); }

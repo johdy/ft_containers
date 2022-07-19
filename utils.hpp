@@ -1,7 +1,5 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
-# include <iostream>
-# include "iterators_utils.hpp"
 
 namespace ft {
 
@@ -68,16 +66,6 @@ namespace ft {
 	struct is_integral_c<char> {
 	  static const bool value = true;
 	};
-
-	/*template <>
-	struct is_integral_c<char16_t> {
-	  static const bool value = true;
-	};
-
-	template <>
-	struct is_integral_c<char32_t> {
-	  static const bool value = true;
-	};*/
 
 	template <>
 	struct is_integral_c<int> {

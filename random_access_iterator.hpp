@@ -1,6 +1,7 @@
 #ifndef RANDOM_ACCESS_ITERATOR_HPP
 # define RANDOM_ACCESS_ITERATOR_HPP
 # include "iterators_utils.hpp"
+
 namespace ft {
 	template< typename T >
 	class random_access_iterator {
@@ -79,14 +80,6 @@ namespace ft {
 
 	template <typename T>
 	bool operator>= (const random_access_iterator<T> lhs, const random_access_iterator<T> rhs) { return (&(*lhs) >= &(*rhs)); }
-
-
-	template <typename T>
-	std::ostream &operator<< (std::ostream& os, const random_access_iterator<T> lhs) {
-		os << &(*lhs);
-		return (os);
-	}
-
 
 	template <typename TL, typename TR>
 	bool operator== (const random_access_iterator<TL> lhs, const random_access_iterator<TR> rhs) { return (&(*lhs) == &(*rhs)); }
@@ -197,13 +190,6 @@ namespace ft {
 
 	template <typename T>
 	bool operator>= (const const_random_access_iterator<T> lhs, const const_random_access_iterator<T> rhs) { return (&(*lhs) >= &(*rhs)); }
-
-
-	template <typename T>
-	std::ostream &operator<< (std::ostream& os, const const_random_access_iterator<T> lhs) {
-		os << &(*lhs);
-		return (os);
-	}
 
 	template <typename T>
 	bool operator== (const random_access_iterator<T> lhs, const const_random_access_iterator<T> rhs) { return (&(*lhs) == &(*rhs)); }

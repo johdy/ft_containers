@@ -89,6 +89,8 @@ namespace ft {
 				this->clear();
 				if (_capacity < rhs._capacity)
 					this->reserve(rhs._capacity);
+				else if (!rhs._capacity)
+					_allocator.deallocate(_begin, _capacity);
 				_capacity = rhs._capacity;
 				_size = rhs._size;
 				_allocator = rhs._allocator;
@@ -105,7 +107,7 @@ namespace ft {
 			}
 
 			~vector() {
-				if (!_begin)
+				if (!_capacity)
 					return ;
 				size_type cap_tmp = _capacity;
 				while (_size)
@@ -168,13 +170,13 @@ namespace ft {
 
 			reference at(size_type n) {
 				if (n >= _size)
-					throw std::out_of_range("vector");
+					throw std::out_of_range("vector::range_check: n >= this->size()");
 				return ( *(_begin + n) ); 
 			}
 
 			const reference at(size_type n) const {
 				if (n >= _size)
-					throw std::out_of_range("vector");
+					throw std::out_of_range("vector::range_check: n >= this->size()");
 				return ( *(_begin + n) ); 
 			}
 
